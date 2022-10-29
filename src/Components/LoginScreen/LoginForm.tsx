@@ -5,6 +5,7 @@ import { darktheme } from "../../Theme/globalTheme"
 import * as Constants from "../../Constants/index"
 import FormInput from "../FormInput"
 import { supabase } from "../../Supabase/supabaseClient"
+import useAuthStore from "../../Store/authStore"
 
 interface FormData {
 	email: string
@@ -12,13 +13,16 @@ interface FormData {
 }
 
 const LoginForm = () => {
+	const setLoggedIn = useAuthStore((state) => state.setLoggedIn)
 	const { handleSubmit, control } = useForm<FormData>()
 
-	const onSubmit = async (data: FormData) => {
+	const onSubmit = async (formData: FormData) => {
 		try {
-			const { error } = await supabase.auth.signInWithPassword(data)
+			const { error, data } = await supabase.auth.signInWithPassword(formData)
 			if (error) throw error
-			console.log(supabase.auth.getSession())
+			if (data.session !== null) {
+				setLoggedIn(data.session)
+			}
 		} catch (error) {
 			console.log(error)
 		}
