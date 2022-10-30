@@ -1,11 +1,14 @@
-import { Text, View } from "native-base"
+import { Box, Text, View } from "native-base"
 import React from "react"
+import HeaderTabs from "../../../Components/HomeScreen/HeaderTabs"
+import { darktheme } from "../../../Theme/globalTheme"
 
 const Home = () => {
 	return (
-		<View>
-			<Text>View</Text>
-		</View>
+		<>
+			<HeaderTabs />
+			<Box bg={darktheme.primaryColor} height="full"></Box>
+		</>
 	)
 }
 
