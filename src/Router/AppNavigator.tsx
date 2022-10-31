@@ -6,7 +6,6 @@ import PublicStackScreens from "./Stacks/PublicStackScreens"
 
 const AppNavigator = () => {
 	const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
-
 	const actualScreen = isLoggedIn ? <HomeStackScreens /> : <PublicStackScreens />
 
 	return <NavigationContainer>{actualScreen}</NavigationContainer>

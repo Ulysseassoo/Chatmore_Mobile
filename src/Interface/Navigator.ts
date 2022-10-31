@@ -4,4 +4,7 @@ export type RootStackParamList = {
 	Register: undefined
     Home: undefined
     Contacts: undefined
+    ChatConversation: {
+        room_id: number | undefined
+    }
 }

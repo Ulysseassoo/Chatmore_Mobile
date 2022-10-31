@@ -8,6 +8,7 @@ interface Props {
 
 const Authenticator = ({ children }: Props) => {
 	const setLoggedIn = useAuthStore((state) => state.setLoggedIn)
+	const session = useAuthStore((state) => state.session)
 	const setLoggedOut = useAuthStore((state) => state.setLoggedOut)
 
 	const checkSession = async () => {
@@ -35,7 +36,9 @@ const Authenticator = ({ children }: Props) => {
 			switch (event) {
 				case "SIGNED_IN":
 					// Update the user data if user connects is active
-					console.log("signedin")
+					if (session !== null) {
+						setLoggedIn(session)
+					}
 					break
 				case "SIGNED_OUT":
 					setLoggedOut()
@@ -45,6 +48,7 @@ const Authenticator = ({ children }: Props) => {
 			}
 		})
 	}, [])
+
 	return <>{children}</>
 }
 

@@ -21,6 +21,17 @@ const RegisterForm = () => {
 		try {
 			const { error, data } = await supabase.auth.signUp(formData)
 			if (error) throw error
+			if (data.user !== null) {
+				const updates = {
+					id: data.user.id,
+					username: formData.username,
+					email: formData.email,
+					updated_at: new Date()
+				}
+				const { error: errorProfile } = await supabase.from("profiles").upsert(updates)
+				if (errorProfile) throw errorProfile
+			}
+
 			if (data.session !== null) {
 				setLoggedIn(data.session)
 			}

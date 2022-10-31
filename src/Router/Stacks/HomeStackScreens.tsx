@@ -11,10 +11,14 @@ import { Animated, Dimensions } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import { supabase } from "../../Supabase/supabaseClient"
 import { Profile } from "../../Interface/Types"
+import ChatConversationScreen from "../Screens/HomeStack/ChatConversationScreen"
 
 type HomeStackParamList = {
 	Home: undefined
 	Contacts: undefined
+	ChatConversation: {
+		room_id: number | undefined
+	}
 }
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>()
@@ -148,6 +152,8 @@ const HomeStackScreens = () => {
 					headerTintColor: "white"
 				}}
 			/>
+
+			<HomeStack.Screen name="ChatConversation" component={ChatConversationScreen} />
 		</HomeStack.Navigator>
 	)
 }
