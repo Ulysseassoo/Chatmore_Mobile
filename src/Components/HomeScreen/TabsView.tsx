@@ -3,6 +3,8 @@ import React from "react"
 import { Animated, Dimensions, StatusBar } from "react-native"
 import { NavigationState, SceneMap, SceneRendererProps, TabView } from "react-native-tab-view"
 import { darktheme } from "../../Theme/globalTheme"
+import ChatUsersList from "./ChatUsersList"
+import FloaterIcon from "./FloaterIcon"
 import Tab from "./Tab"
 
 const routes = [
@@ -23,18 +25,25 @@ const routes = [
 	}
 ]
 
-const HeaderTabs = () => {
+const TabsView = () => {
 	const [index, setIndex] = React.useState(0)
 
 	return (
-		<Box bg={darktheme.headerMenuColor}>
-			<HStack space="4" position="relative">
-				{routes.map((item) => (
-					<Tab {...item} setIndex={setIndex} activeIndex={index} key={item.key} />
-				))}
-			</HStack>
-		</Box>
+		<>
+			<Box bg={darktheme.headerMenuColor}>
+				<HStack space="4" position="relative">
+					{routes.map((item) => (
+						<Tab {...item} setIndex={setIndex} activeIndex={index} key={item.key} />
+					))}
+				</HStack>
+			</Box>
+
+			<Box bg={darktheme.primaryColor} height="full" position="relative">
+				{index === 0 && <ChatUsersList />}
+				<FloaterIcon />
+			</Box>
+		</>
 	)
 }
 
-export default HeaderTabs
+export default TabsView
