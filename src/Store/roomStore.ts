@@ -2,11 +2,11 @@ import create from 'zustand'
 import { SessionState } from "../Interface/StoreState"
 import { immer } from "zustand/middleware/immer";
 import { Session, User } from "@supabase/supabase-js";
-import { Room } from "../Interface/Types";
+import { Profile, Room } from "../Interface/Types";
 import { getUserRooms, getRoom, getRoomMessages } from "../Api/API";
 export interface RoomState {
 	room: number
-	users: User[]
+	users: Profile[]
 	messages: []
 	index?: number
 }
@@ -32,7 +32,7 @@ interface  RoomsState {
 
 interface  RoomInnerJoinData {
 	room: number
-	user: User
+	user: Profile
 }
 
 const getUserChatRooms = async (user: User) => {

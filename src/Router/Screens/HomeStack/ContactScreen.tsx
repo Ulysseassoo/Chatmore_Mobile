@@ -54,8 +54,8 @@ const ContactScreen = () => {
 		const { id: userId } = userData
 		// We need to check if that user doesn't already have a relation with the existing user
 		if (!checkIfUserHasRoom(userId)) {
-			// toast.error("You already have a conversation with that user !")
-			return
+			const check = rooms.filter((room) => room.users[0].id === userId)
+			return check[0]
 		}
 		const newRoom = await createRoom(userId, userData)
 		addRoom(newRoom)

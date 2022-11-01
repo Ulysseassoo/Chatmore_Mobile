@@ -1,17 +1,16 @@
 import React, { useEffect, useRef } from "react"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Home from "../Screens/HomeStack/Home"
-import { Box, Flex, HStack, Icon, Input, Pressable, Text } from "native-base"
+import { Box, Flex, HStack, Icon, Input, Pressable, Text, useToast } from "native-base"
 import { darktheme } from "../../Theme/globalTheme"
 import { SimpleLineIcons, AntDesign } from "@expo/vector-icons"
 import ContactScreen from "../Screens/HomeStack/ContactScreen"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import useSettingsStore from "../../Store/settingsStore"
 import { Animated, Dimensions } from "react-native"
-import { FontAwesome } from "@expo/vector-icons"
 import { supabase } from "../../Supabase/supabaseClient"
-import { Profile } from "../../Interface/Types"
 import ChatConversationScreen from "../Screens/HomeStack/ChatConversationScreen"
+import ChatConversationHeader from "../Screens/HomeStack/ChatConversationHeader"
 
 type HomeStackParamList = {
 	Home: undefined
@@ -27,6 +26,7 @@ const HomeStackScreens = () => {
 	const toggleContactResearch = useSettingsStore((state) => state.toggleContactResearch)
 	const isContactResearchActive = useSettingsStore((state) => state.isContactResearchActive)
 	const setProfiles = useSettingsStore((state) => state.setProfiles)
+	const toast = useToast()
 
 	const insets = useSafeAreaInsets()
 	const windowWidth = Dimensions.get("screen").width
@@ -42,8 +42,6 @@ const HomeStackScreens = () => {
 			Animated.timing(x, { toValue: xEnd, useNativeDriver: false }),
 			Animated.timing(opacity, { toValue: opacityEnd, useNativeDriver: false })
 		]).start()
-		// if (!isContactResearchActive) {
-		// }
 	}, [isContactResearchActive])
 
 	const handleInputText = async (textValue: string) => {
@@ -57,11 +55,10 @@ const HomeStackScreens = () => {
 			if (error) throw error.message
 			setProfiles(data!)
 		} catch (error: any) {
-			console.log(error)
-			// toast.danger({
-			// 	message: error,
-			// 	duration: 2000
-			// })
+			toast.show({
+				description: error,
+				colorScheme: "danger"
+			})
 		}
 	}
 
@@ -153,7 +150,16 @@ const HomeStackScreens = () => {
 				}}
 			/>
 
-			<HomeStack.Screen name="ChatConversation" component={ChatConversationScreen} />
+			<HomeStack.Screen
+				name="ChatConversation"
+				component={ChatConversationScreen}
+				options={{
+					headerStyle: {
+						backgroundColor: darktheme.headerMenuColor
+					},
+					header: (props) => <ChatConversationHeader />
+				}}
+			/>
 		</HomeStack.Navigator>
 	)
 }
