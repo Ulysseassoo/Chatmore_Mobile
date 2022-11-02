@@ -2,12 +2,12 @@ import create from 'zustand'
 import { SessionState } from "../Interface/StoreState"
 import { immer } from "zustand/middleware/immer";
 import { Session, User } from "@supabase/supabase-js";
-import { Profile, Room } from "../Interface/Types";
+import { Message, Profile, Room } from "../Interface/Types";
 import { getUserRooms, getRoom, getRoomMessages } from "../Api/API";
 export interface RoomState {
 	room: number
 	users: Profile[]
-	messages: []
+	messages: Message[]
 	index?: number
 }
 

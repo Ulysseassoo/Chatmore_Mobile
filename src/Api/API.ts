@@ -1,3 +1,5 @@
+import { Message } from "../Interface/Types";
+import { CreateMessage } from "../Router/Screens/HomeStack/ChatConversationBottom";
 import { supabase } from "../Supabase/supabaseClient";
 
 export const getUserRooms = async (user_id: string) => {
@@ -26,6 +28,16 @@ export const getRoomMessages = async (room_id: string) => {
 		if (error) throw error
 		return data
 	} catch (error) {
+		return error
+	}
+}
+
+export const createMessage = async (messageData: CreateMessage) => {
+	try {
+		const { data, error } = await supabase.from("message").insert(messageData)
+		if (error) throw error
+		return data
+	} catch (error: any) {
 		return error
 	}
 }

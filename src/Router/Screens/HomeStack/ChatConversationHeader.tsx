@@ -13,7 +13,7 @@ interface Params {
 	room_id: number
 }
 
-interface RouteProps {
+export interface RouteProps {
 	key: string
 	name: string
 	path?: string
@@ -42,12 +42,21 @@ const ChatConversationHeader = () => {
 							source={{
 								uri: userToChat?.avatar_url
 							}}
+							bg={darktheme.accentColor}
 							size={"sm"}>
 							{userToChat?.username && userToChat?.username[0].toUpperCase() + userToChat?.username[1].toUpperCase()}
 						</Avatar>
-						<Text color="white" fontSize="lg" fontWeight="bold">
-							{userToChat?.username}
-						</Text>
+						<Box>
+							<Text color="white" fontSize="lg" fontWeight="bold">
+								{userToChat?.username}
+							</Text>
+							<HStack space="1" alignItems={"center"}>
+								<Box height="2" width="2" borderRadius={"full"} bg="red.500" />
+								<Text fontSize={"xs"} color="white">
+									Offline
+								</Text>
+							</HStack>
+						</Box>
 					</HStack>
 				</HStack>
 
