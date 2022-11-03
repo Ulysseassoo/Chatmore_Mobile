@@ -39,7 +39,7 @@ const ChatConversationBottom = () => {
 		}
 		try {
 			if (content === "") throw new Error("You need to write something :)")
-			const messageD = await createMessage(newMessage)
+			await createMessage(newMessage)
 			setValue("message", "")
 		} catch (error: any) {
 			toast.show({

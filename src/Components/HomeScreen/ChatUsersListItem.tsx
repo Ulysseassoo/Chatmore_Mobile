@@ -1,10 +1,11 @@
 import { useNavigation } from "@react-navigation/core"
-import { Box, HStack, Avatar, Flex, Icon, Text, Pressable } from "native-base"
+import { Box, HStack, Avatar, Flex, Icon, Text, Pressable, Badge } from "native-base"
 import React, { useMemo } from "react"
 import { RoomState } from "../../Store/roomStore"
 import { darktheme } from "../../Theme/globalTheme"
 import { Ionicons } from "@expo/vector-icons"
 import { Dimensions } from "react-native"
+import useAuthStore from "../../Store/authStore"
 
 interface Props {
 	item: RoomState
@@ -13,13 +14,24 @@ interface Props {
 const ChatUsersListItem = ({ item }: Props) => {
 	const user = item.users[0]
 	const navigation = useNavigation()
-	const actualMessage = useMemo(() => item.messages[0], [item.messages])
+	const session = useAuthStore((state) => state.session)
+	const actualMessage = useMemo(() => item.messages[item.messages.length - 1], [item.messages])
 	const dimensions = Dimensions.get("screen")
 	const goToUserRoom = (roomId: number) => {
 		navigation.navigate("ChatConversation", {
 			room_id: roomId
 		})
 	}
+
+	const isFromConnectedUser = actualMessage.user === session?.user.id
+
+	const getNotViewedMessages = (user_id: string | undefined) => {
+		const count = item.messages.filter((message) => {
+			if (message.user !== user_id) return message.view === false
+		})
+		return count.length
+	}
+
 	return (
 		<Box width={dimensions.width} position="relative">
 			<Pressable
@@ -54,12 +66,28 @@ const ChatUsersListItem = ({ item }: Props) => {
 								</Text>
 							)}
 						</Flex>
-						<HStack alignItems="center" space="1">
-							<Icon as={Ionicons} name="checkmark-done-sharp" color={item.messages[0].view ? darktheme.accentColor : "gray.500"} />
-							<Text color="gray.400" ellipsizeMode="tail" numberOfLines={1} maxW={"xs"} display="flex" flexDir="row" alignItems="center">
-								{actualMessage.content}
-							</Text>
-						</HStack>
+						<Flex justifyContent={"space-between"} flexDir="row">
+							<HStack alignItems="center" space="1">
+								{isFromConnectedUser && (
+									<Icon as={Ionicons} name="checkmark-done-sharp" color={item.messages[0].view ? darktheme.accentColor : "gray.500"} />
+								)}
+								<Text
+									color="gray.400"
+									ellipsizeMode="tail"
+									numberOfLines={1}
+									maxW={dimensions.width - 150}
+									display="flex"
+									flexDir="row"
+									alignItems="center">
+									{actualMessage.content}
+								</Text>
+							</HStack>
+							{getNotViewedMessages(session?.user.id) > 0 && (
+								<Badge bg={darktheme.accentColor} color="white" fontSize={"2xs"} borderRadius={"full"}>
+									{getNotViewedMessages(session?.user.id)}
+								</Badge>
+							)}
+						</Flex>
 					</Flex>
 				</HStack>
 			</Pressable>

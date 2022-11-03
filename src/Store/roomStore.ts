@@ -55,7 +55,7 @@ const getUserChatRooms = async (user: User) => {
             roomNew.room = room.room
             if (room.user.id !== user.id) roomNew.users.push(room.user)
         })
-        roomNew.messages = roomMessages
+        roomNew.messages = roomMessages.reverse()
         newRooms.rooms.push(roomNew)
     }
 

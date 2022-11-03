@@ -95,7 +95,7 @@ const HomeStackScreens = () => {
 						backgroundColor: darktheme.headerMenuColor
 					},
 					header: (props) => (
-						<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 14} paddingBottom={3} paddingX={5}>
+						<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 10} paddingBottom={3} paddingX={5}>
 							<Flex justifyContent={"space-between"} alignItems="center" flexDir="row" position="relative" overflow="hidden">
 								<HStack space={8} alignItems="center">
 									<Pressable onPress={props.navigation.goBack}>

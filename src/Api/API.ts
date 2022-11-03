@@ -41,3 +41,12 @@ export const createMessage = async (messageData: CreateMessage) => {
 		return error
 	}
 }
+
+export const deleteMessageById = async (messageID: number) => {
+	try {
+		const { error } = await supabase.from("message").delete().match({ id: messageID })
+		if (error) throw Error
+	} catch (error) {
+		return error
+	}
+}
