@@ -1,5 +1,5 @@
 import { Avatar, Box, Flex, HStack, Icon, Text } from "native-base"
-import React from "react"
+import React, { useMemo } from "react"
 import { Pressable } from "react-native"
 import { darktheme } from "../../../Theme/globalTheme"
 import { SimpleLineIcons, AntDesign } from "@expo/vector-icons"
@@ -8,6 +8,7 @@ import { NativeStackHeaderProps } from "@react-navigation/native-stack"
 import useRoomStore from "../../../Store/roomStore"
 import { ParamListBase, useNavigation, useRoute } from "@react-navigation/core"
 import { RootStackParamList } from "../../../Interface/Navigator"
+import useOnlineStore from "../../../Store/onlineStore"
 
 interface Params {
 	room_id: number
@@ -27,6 +28,12 @@ const ChatConversationHeader = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const userToChat = actualRoom?.users[0]
+	const onlineUsers = useOnlineStore((state) => state.onlineUsers)
+	const isUserOnline = useMemo(() => {
+		const isOnline = Object.keys(onlineUsers).find((userId) => userId === userToChat?.id)
+		if (!isOnline) return false
+		return true
+	}, [onlineUsers, userToChat])
 
 	if (!actualRoom) return <></>
 
@@ -51,9 +58,9 @@ const ChatConversationHeader = () => {
 								{userToChat?.username}
 							</Text>
 							<HStack space="1" alignItems={"center"}>
-								<Box height="2" width="2" borderRadius={"full"} bg="red.500" />
+								<Box height="2" width="2" borderRadius={"full"} bg={isUserOnline ? "green.500" : "red.500"} />
 								<Text fontSize={"xs"} color="white">
-									Offline
+									{isUserOnline ? "Online" : "Offline"}
 								</Text>
 							</HStack>
 						</Box>

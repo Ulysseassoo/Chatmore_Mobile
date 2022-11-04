@@ -4,6 +4,7 @@ import React, { useCallback, useEffect } from "react"
 import { ListRenderItem } from "react-native"
 import useAuthStore from "../../Store/authStore"
 import useRoomStore, { RoomState } from "../../Store/roomStore"
+import { supabase } from "../../Supabase/supabaseClient"
 import { darktheme } from "../../Theme/globalTheme"
 import ChatUsersListItem from "./ChatUsersListItem"
 
@@ -18,6 +19,45 @@ const ChatUsersList = () => {
 			getChatrooms(session.user)
 		}
 	}, [isLoading, session])
+
+	// useEffect(() => {
+	// 	if (!isLoading) {
+	// 		const channel = supabase.channel("room1")
+
+	// 		// Subscribe registers your client with the server
+
+	// 		channel.subscribe((status) => {
+	// 			if (status === "SUBSCRIBED") {
+	// 				// now you can start broadcasting cursor positions
+
+	// 				setInterval(() => {
+	// 					channel.send({
+	// 						type: "broadcast",
+
+	// 						event: "cursor-pos",
+
+	// 						payload: { x: Math.random(), y: Math.random() }
+	// 					})
+
+	// 					console.log(status)
+	// 				}, 5000)
+	// 			}
+	// 		})
+
+	// 		supabase
+
+	// 			.channel("room1")
+
+	// 			.on("broadcast", { event: "cursor-pos" }, (payload) => console.log(payload))
+
+	// 			.subscribe((status) => {
+	// 				if (status === "SUBSCRIBED") {
+	// 					console.log("status", status)
+	// 					// your callback function will now be called with the messages broadcast by the other client
+	// 				}
+	// 			})
+	// 	}
+	// }, [isLoading])
 
 	if (isLoading) {
 		return (
