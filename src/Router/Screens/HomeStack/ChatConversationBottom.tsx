@@ -1,5 +1,5 @@
 import { Box, Center, Flex, FormControl, HStack, Icon, Input, Pressable, useToast } from "native-base"
-import React from "react"
+import React, { useEffect } from "react"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { Controller, useForm } from "react-hook-form"
@@ -9,6 +9,8 @@ import { useRoute } from "@react-navigation/core"
 import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import { createMessage } from "../../../Api/API"
+import { supabase } from "../../../Supabase/supabaseClient"
+import useOnlineStore from "../../../Store/onlineStore"
 
 interface FormData {
 	message: string
@@ -27,6 +29,13 @@ const ChatConversationBottom = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const session = useAuthStore((state) => state.session)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
+	const setRoomUsers = useOnlineStore((state) => state.setTypyingUsers)
+
+	const channel = supabase.channel(actualRoom?.room.toString()!, {
+		config: {
+			presence: { key: session?.user.id }
+		}
+	})
 
 	const { handleSubmit, control, setValue } = useForm<FormData>()
 	const onSubmit = async (formData: FormData) => {
@@ -41,6 +50,7 @@ const ChatConversationBottom = () => {
 			if (content === "") throw new Error("You need to write something :)")
 			await createMessage(newMessage)
 			setValue("message", "")
+			channel.untrack()
 		} catch (error: any) {
 			toast.show({
 				description: error.error_description || error.message,
@@ -48,6 +58,14 @@ const ChatConversationBottom = () => {
 			})
 		}
 	}
+
+	channel
+		.on("presence", { event: "sync" }, () => {
+			// If sent untrack presence if typying && check if it's a user that it's typying
+
+			setRoomUsers({ ...channel.presenceState() }, actualRoom?.room.toString())
+		})
+		.subscribe()
 
 	return (
 		<FormControl>
@@ -75,7 +93,7 @@ const ChatConversationBottom = () => {
 							placeholder="Message"
 							fontSize={"md"}
 							onChangeText={onChange}
-							onKeyPress={(e) => console.log(e)}
+							onKeyPress={(e) => channel.track({ isTyping: Date.now() })}
 							value={value}
 							onBlur={onBlur}
 							defaultValue={""}

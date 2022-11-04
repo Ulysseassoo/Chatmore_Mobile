@@ -35,7 +35,6 @@ const ChatMessage = ({ item }: Props) => {
 	const deleteMessage = async (id: number) => {
 		try {
 			const message = await deleteMessageById(id)
-			console.log(message)
 			toast.show({
 				description: "Message deleted !",
 				colorScheme: "green"

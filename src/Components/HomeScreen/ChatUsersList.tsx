@@ -20,44 +20,27 @@ const ChatUsersList = () => {
 		}
 	}, [isLoading, session])
 
-	// useEffect(() => {
-	// 	if (!isLoading) {
-	// 		const channel = supabase.channel("room1")
+	useEffect(() => {
+		if (!isLoading) {
+			const channel = supabase.channel("room1")
 
-	// 		// Subscribe registers your client with the server
+			// Subscribe registers your client with the server
 
-	// 		channel.subscribe((status) => {
-	// 			if (status === "SUBSCRIBED") {
-	// 				// now you can start broadcasting cursor positions
-
-	// 				setInterval(() => {
-	// 					channel.send({
-	// 						type: "broadcast",
-
-	// 						event: "cursor-pos",
-
-	// 						payload: { x: Math.random(), y: Math.random() }
-	// 					})
-
-	// 					console.log(status)
-	// 				}, 5000)
-	// 			}
-	// 		})
-
-	// 		supabase
-
-	// 			.channel("room1")
-
-	// 			.on("broadcast", { event: "cursor-pos" }, (payload) => console.log(payload))
-
-	// 			.subscribe((status) => {
-	// 				if (status === "SUBSCRIBED") {
-	// 					console.log("status", status)
-	// 					// your callback function will now be called with the messages broadcast by the other client
-	// 				}
-	// 			})
-	// 	}
-	// }, [isLoading])
+			channel.subscribe((status) => {
+				if (status === "SUBSCRIBED") {
+					// now you can start broadcasting cursor positions
+					// setInterval(() => {
+					// 	channel.send({
+					// 		type: "broadcast",
+					// 		event: "cursor-pos",
+					// 		payload: { x: Math.random(), y: Math.random() }
+					// 	})
+					// 	console.log(status)
+					// }, 1000)
+				}
+			})
+		}
+	}, [isLoading])
 
 	if (isLoading) {
 		return (

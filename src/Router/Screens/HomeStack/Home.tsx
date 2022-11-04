@@ -18,6 +18,7 @@ const Home = () => {
 				}
 			})
 
+			// Set online users
 			channel.on("presence", { event: "sync" }, () => {
 				setOnlineUsers({ ...channel.presenceState() })
 			})
