@@ -11,6 +11,7 @@ import { RootStackParamList } from "../../../Interface/Navigator"
 import useOnlineStore from "../../../Store/onlineStore"
 import { supabase } from "../../../Supabase/supabaseClient"
 import useAuthStore from "../../../Store/authStore"
+import useUserIsTypying from "../../../Hooks/useUserIsTypying"
 // import { getChannelRoom } from "./ChatConversationBottom"
 
 interface Params {
@@ -31,22 +32,7 @@ const ChatConversationHeader = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const userToChat = actualRoom?.users[0]
-	const [userIsTypying, setUserIsTypying] = useState(false)
-	const roomUsers = useOnlineStore((state) => state.typyingUsersRooms)
-	const isUserTypying = () => {
-		if (actualRoom !== undefined) {
-			const roomRealtime = roomUsers[actualRoom?.room!]
-			if (roomRealtime !== undefined) {
-				const isUserExisting = Object.keys(roomRealtime).find((id) => id === userToChat!.id)
-				if (isUserExisting) {
-					setUserIsTypying(true)
-					return
-				}
-			}
-		}
-		return setUserIsTypying(false)
-	}
-
+	const userIsTypying = useUserIsTypying(route.params.room_id)
 	const onlineUsers = useOnlineStore((state) => state.onlineUsers)
 	const isUserOnline = useMemo(() => {
 		const isOnline = Object.keys(onlineUsers).find((userId) => userId === userToChat?.id)
@@ -55,10 +41,6 @@ const ChatConversationHeader = () => {
 	}, [onlineUsers, userToChat])
 
 	if (!actualRoom) return <></>
-
-	useEffect(() => {
-		isUserTypying()
-	}, [actualRoom, roomUsers])
 
 	return (
 		<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 14} paddingBottom={3} paddingX={4}>

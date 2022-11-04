@@ -67,6 +67,12 @@ const ChatConversationBottom = () => {
 		})
 		.subscribe()
 
+	useEffect(() => {
+		return () => {
+			channel.untrack()
+		}
+	}, [])
+
 	return (
 		<FormControl>
 			<HStack width="full" height="10" borderRadius="full" position="relative" flexDir={"row"} space="2">

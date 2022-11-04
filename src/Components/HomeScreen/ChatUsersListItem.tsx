@@ -6,6 +6,7 @@ import { darktheme } from "../../Theme/globalTheme"
 import { Ionicons } from "@expo/vector-icons"
 import { Dimensions } from "react-native"
 import useAuthStore from "../../Store/authStore"
+import useUserIsTypying from "../../Hooks/useUserIsTypying"
 
 interface Props {
 	item: RoomState
@@ -22,6 +23,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 			room_id: roomId
 		})
 	}
+	const isUserTypying = useUserIsTypying(item.room)
 
 	const isFromConnectedUser = actualMessage.user === session?.user.id
 
@@ -72,14 +74,14 @@ const ChatUsersListItem = ({ item }: Props) => {
 									<Icon as={Ionicons} name="checkmark-done-sharp" color={item.messages[0].view ? darktheme.accentColor : "gray.500"} />
 								)}
 								<Text
-									color="gray.400"
+									color={isUserTypying ? darktheme.accentColor : "gray.400"}
 									ellipsizeMode="tail"
 									numberOfLines={1}
 									maxW={dimensions.width - 150}
 									display="flex"
 									flexDir="row"
 									alignItems="center">
-									{actualMessage.content}
+									{isUserTypying ? "Is writing..." : actualMessage.content}
 								</Text>
 							</HStack>
 							{getNotViewedMessages(session?.user.id) > 0 && (
