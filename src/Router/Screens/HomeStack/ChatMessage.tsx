@@ -10,6 +10,19 @@ interface Props {
 	item: Message
 }
 
+export const dateFormatted = (created_at: string) => {
+	const splittedDate = new Date(created_at)
+		.toLocaleTimeString([], {
+			hourCycle: "h23",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "numeric"
+		})
+		.split(":")
+
+	return `${splittedDate[0]}:${splittedDate[1]}`
+}
+
 const ChatMessage = ({ item }: Props) => {
 	const session = useAuthStore((state) => state.session)
 	const { isOpen, onOpen, onClose } = useDisclose()
@@ -18,19 +31,6 @@ const ChatMessage = ({ item }: Props) => {
 	const isFromConnectedUser = useMemo(() => {
 		return item.user === session?.user.id
 	}, [])
-
-	const dateFormatted = (created_at: string) => {
-		const splittedDate = new Date(created_at)
-			.toLocaleTimeString([], {
-				hourCycle: "h23",
-				hour: "2-digit",
-				minute: "2-digit",
-				second: "numeric"
-			})
-			.split(":")
-
-		return `${splittedDate[0]}:${splittedDate[1]}`
-	}
 
 	const deleteMessage = async (id: number) => {
 		try {

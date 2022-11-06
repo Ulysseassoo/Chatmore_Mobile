@@ -19,6 +19,7 @@ type State =  {
 type Actions = {
     getChatrooms: (user: User) => void;
     addRoom: (room: RoomState) => void;
+    addMessageToRoom: (message: Message) => void;
 };
 
 const initialState: State = {
@@ -62,6 +63,7 @@ const getUserChatRooms = async (user: User) => {
     return newRooms
 }
 
+
 const useRoomStore = create(
     immer<State & Actions>((set) => ({
       ...initialState,
@@ -75,7 +77,14 @@ const useRoomStore = create(
     addRoom: (room) =>
         set( (state) => {
           state.rooms.push(room)
-        })
+        }),
+    addMessageToRoom: (message) => set((state) => {
+        const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
+        if(roomIndex) {
+            state.rooms[roomIndex].messages.push(message)
+        }
+    })
+        
     })),
     
     

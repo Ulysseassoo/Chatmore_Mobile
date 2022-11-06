@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { Dimensions } from "react-native"
 import useAuthStore from "../../Store/authStore"
 import useUserIsTypying from "../../Hooks/useUserIsTypying"
+import { dateFormatted } from "../../Router/Screens/HomeStack/ChatMessage"
 
 interface Props {
 	item: RoomState
@@ -63,8 +64,8 @@ const ChatUsersListItem = ({ item }: Props) => {
 							</Text>
 
 							{actualMessage.created_at && (
-								<Text color="white">
-									{new Date(actualMessage.created_at).getHours()}:{new Date(actualMessage.created_at).getMinutes()}
+								<Text color="white" fontSize={"xs"}>
+									{dateFormatted(actualMessage.created_at)}
 								</Text>
 							)}
 						</Flex>

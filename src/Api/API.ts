@@ -34,7 +34,7 @@ export const getRoomMessages = async (room_id: string) => {
 
 export const createMessage = async (messageData: CreateMessage) => {
 	try {
-		const { data, error } = await supabase.from("message").insert(messageData)
+		const { data, error } = await supabase.from("message").insert(messageData).select().single()
 		if (error) throw error
 		return data
 	} catch (error: any) {
@@ -47,6 +47,16 @@ export const deleteMessageById = async (messageID: number) => {
 		const { error } = await supabase.from("message").delete().match({ id: messageID })
 		if (error) throw Error
 	} catch (error) {
+		return error
+	}
+}
+
+export const updateRoomMessages = async (messageData: Message[]) => {
+	try {
+		const { data, error } = await supabase.from("message").upsert(messageData, { onConflict: "view" })
+		if (error) throw error
+		return data
+	} catch (error: any) {
 		return error
 	}
 }
