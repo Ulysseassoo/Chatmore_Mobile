@@ -82,10 +82,8 @@ const useRoomStore = create(
         }),
     addMessageToRoom: (message) => set((state) => {
         const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
-        if(roomIndex) {
-            console.log("before", state.rooms[roomIndex].messages)
+        if(roomIndex !== -1) {
             state.rooms[roomIndex].messages.push(message)
-            console.log("after", state.rooms[roomIndex].messages)
 
         }
     }),

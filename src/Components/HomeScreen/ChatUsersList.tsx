@@ -20,28 +20,6 @@ const ChatUsersList = () => {
 		}
 	}, [isLoading, session])
 
-	useEffect(() => {
-		if (!isLoading) {
-			const channel = supabase.channel("room1")
-
-			// Subscribe registers your client with the server
-
-			channel.subscribe((status) => {
-				if (status === "SUBSCRIBED") {
-					// now you can start broadcasting cursor positions
-					// setInterval(() => {
-					// 	channel.send({
-					// 		type: "broadcast",
-					// 		event: "cursor-pos",
-					// 		payload: { x: Math.random(), y: Math.random() }
-					// 	})
-					// 	console.log(status)
-					// }, 1000)
-				}
-			})
-		}
-	}, [isLoading])
-
 	if (isLoading) {
 		return (
 			<Center height="80%" width="full">
