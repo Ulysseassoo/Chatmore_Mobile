@@ -57,6 +57,7 @@ const ChatConversationBottom = () => {
 		try {
 			if (content === "") throw new Error("You need to write something :)")
 			const message = await createMessage(newMessage)
+			console.log(message)
 			addMessageToRoom(message)
 			if (getChannelRoom !== null) {
 				getChannelRoom.send({
@@ -77,19 +78,27 @@ const ChatConversationBottom = () => {
 		}
 	}
 
-	channel
-		.on("presence", { event: "sync" }, () => {
-			// If sent untrack presence if typying && check if it's a user that it's typying
-
-			setRoomUsers({ ...channel.presenceState() }, actualRoom?.room.toString())
-		})
-		.subscribe()
-
 	useEffect(() => {
 		return () => {
 			channel.untrack()
 		}
 	}, [])
+
+	useEffect(() => {
+		if (actualRoom !== undefined) {
+			channel
+				.on("presence", { event: "sync" }, () => {
+					// If sent untrack presence if typying && check if it's a user that it's typying
+
+					setRoomUsers({ ...channel.presenceState() }, actualRoom?.room.toString())
+				})
+				.subscribe((status) => {
+					if (status === "SUBSCRIBED") {
+						console.log("subscribed to room", status, actualRoom.room)
+					}
+				})
+		}
+	}, [actualRoom?.room])
 
 	return (
 		<FormControl>

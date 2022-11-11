@@ -11,6 +11,7 @@ const Home = () => {
 	const setOnlineUsers = useOnlineStore((state) => state.setOnlineUsers)
 	const rooms = useRoomStore((state) => state.rooms)
 	const addMessageToRoom = useRoomStore((state) => state.addMessageToRoom)
+	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
 	const isLoading = useRoomStore((state) => state.isLoading)
 
 	const subscribeToRooms = () => {
@@ -19,6 +20,7 @@ const Home = () => {
 				const channel = supabase.channel("room" + room.room.toString())
 				channel
 					.on("broadcast", { event: "message" }, (payload) => addMessageToRoom(payload.payload.message))
+					.on("broadcast", { event: "readMessages" }, (payload) => updateViewRoomMessages(payload.payload.messages, session?.user.id))
 					.subscribe(async (status) => {
 						if (status === "SUBSCRIBED") {
 							console.log(status)

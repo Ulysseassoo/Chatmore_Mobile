@@ -1,10 +1,12 @@
 import { useRoute } from "@react-navigation/core"
 import { Box, FlatList, Flex, Text, View } from "native-base"
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { updateRoomMessages } from "../../../Api/API"
+import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import useRoomStore from "../../../Store/roomStore"
+import { supabase } from "../../../Supabase/supabaseClient"
 import { darktheme } from "../../../Theme/globalTheme"
 import ChatConversationBottom from "./ChatConversationBottom"
 import { RouteProps } from "./ChatConversationHeader"
@@ -16,25 +18,73 @@ const ChatConversationScreen = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)!
 	const session = useAuthStore((state) => state.session)
+	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
+	const channels = supabase.getChannels()
+	const getChannelRoom = useMemo(() => {
+		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + actualRoom?.room.toString()!)
+		if (channelRoom) return channelRoom
+		return null
+	}, [channels])
 
 	const getNotViewedMessages = () => {
-		const count = actualRoom.messages.filter((message) => {
-			if (message.user !== session?.user.id) return message.view === false
-		})
+		const count = actualRoom.messages
+			.filter((message) => {
+				if (message.user !== session?.user.id) return message.view === false
+			})
+			.map((message) => {
+				let newMessage = { ...message }
+				// @ts-ignore
+				if (newMessage.images) {
+					// @ts-ignore
+					delete newMessage.images
+				}
+				return newMessage
+			})
 		return count
 	}
 
-	const updateUserMessages = async () => {
+	const setViewedMessage = () => {
 		const notViewedMessages = getNotViewedMessages()
-		if (notViewedMessages.length === 0) return
-		await updateRoomMessages(notViewedMessages)
+		if (notViewedMessages.length === 0) return []
+		const viewedMessages = notViewedMessages.map((message) => {
+			message.view = true
+			return message
+		})
+		return viewedMessages
 	}
 
-	// console.log(getNotViewedMessages(session?.user.id))
+	const updateUserMessages = async () => {
+		try {
+			const viewedMessages = setViewedMessage()
+			console.log(viewedMessages)
+			if (viewedMessages.length === 0) return
+			const messages: Message[] = await updateRoomMessages(viewedMessages)
+			return messages
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const updateMessagesInRoom = async () => {
+		try {
+			const messages = await updateUserMessages()
+			if (messages === undefined) return
+			updateViewRoomMessages(messages, session?.user.id)
+			if (getChannelRoom !== null) {
+				getChannelRoom.send({
+					type: "broadcast",
+					event: "readMessages",
+					payload: { messages }
+				})
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 	// useEffect(() => {
-
-	// }, [])
+	// 	updateMessagesInRoom()
+	// }, [actualRoom.messages])
 
 	return (
 		<Box bg={darktheme.primaryColor} height="full" position="relative" paddingTop={insets.top - 20} paddingBottom={insets.bottom + 2}>

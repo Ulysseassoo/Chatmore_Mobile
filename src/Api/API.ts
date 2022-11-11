@@ -53,8 +53,10 @@ export const deleteMessageById = async (messageID: number) => {
 
 export const updateRoomMessages = async (messageData: Message[]) => {
 	try {
-		const { data, error } = await supabase.from("message").upsert(messageData, { onConflict: "view" })
+		console.log("messageData", messageData)
+		const { data, error } = await supabase.from("message").upsert(messageData).select()
 		if (error) throw error
+		console.log("data", data)
 		return data
 	} catch (error: any) {
 		return error

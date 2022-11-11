@@ -4,6 +4,7 @@ import { immer } from "zustand/middleware/immer";
 import { Session, User } from "@supabase/supabase-js";
 import { Message, Profile, Room } from "../Interface/Types";
 import { getUserRooms, getRoom, getRoomMessages } from "../Api/API";
+import useAuthStore from "./authStore";
 export interface RoomState {
 	room: number
 	users: Profile[]
@@ -20,6 +21,7 @@ type Actions = {
     getChatrooms: (user: User) => void;
     addRoom: (room: RoomState) => void;
     addMessageToRoom: (message: Message) => void;
+    updateViewRoomMessages: (messages: Message[], connectedUserId: string | undefined) => void;
 };
 
 const initialState: State = {
@@ -81,9 +83,30 @@ const useRoomStore = create(
     addMessageToRoom: (message) => set((state) => {
         const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
         if(roomIndex) {
+            console.log("before", state.rooms[roomIndex].messages)
             state.rooms[roomIndex].messages.push(message)
+            console.log("after", state.rooms[roomIndex].messages)
+
         }
-    })
+    }),
+    updateViewRoomMessages: (messages, connectedUserId) => {
+        if(connectedUserId !== null) {
+            set((state) => {
+                const roomIndex = state.rooms.findIndex((room) => room.room === messages[0].room)
+                if(roomIndex) {
+                    console.log("room before", state.rooms[roomIndex].messages)
+                    const updatedMessages = state.rooms[roomIndex].messages.map((message) => {
+                        if(message.view === false && message.user !== connectedUserId) {
+                            message.view = true
+                        }
+                        return message
+                    })
+                    console.log("room after", updatedMessages)
+                    state.rooms[roomIndex].messages = updatedMessages
+                }
+            })
+        }
+    }
         
     })),
     

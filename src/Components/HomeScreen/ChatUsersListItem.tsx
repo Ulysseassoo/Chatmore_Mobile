@@ -72,7 +72,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 						<Flex justifyContent={"space-between"} flexDir="row">
 							<HStack alignItems="center" space="1">
 								{isFromConnectedUser && (
-									<Icon as={Ionicons} name="checkmark-done-sharp" color={item.messages[0].view ? darktheme.accentColor : "gray.500"} />
+									<Icon as={Ionicons} name="checkmark-done-sharp" color={actualMessage.view ? darktheme.accentColor : "gray.500"} />
 								)}
 								<Text
 									color={isUserTypying ? darktheme.accentColor : "gray.400"}
