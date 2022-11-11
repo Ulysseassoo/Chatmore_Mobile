@@ -56,7 +56,6 @@ const ChatConversationScreen = () => {
 	const updateUserMessages = async () => {
 		try {
 			const viewedMessages = setViewedMessage()
-			console.log(viewedMessages)
 			if (viewedMessages.length === 0) return
 			const messages: Message[] = await updateRoomMessages(viewedMessages)
 			return messages
@@ -82,9 +81,9 @@ const ChatConversationScreen = () => {
 		}
 	}
 
-	// useEffect(() => {
-	// 	updateMessagesInRoom()
-	// }, [actualRoom.messages])
+	useEffect(() => {
+		updateMessagesInRoom()
+	}, [actualRoom.messages])
 
 	return (
 		<Box bg={darktheme.primaryColor} height="full" position="relative" paddingTop={insets.top - 20} paddingBottom={insets.bottom + 2}>

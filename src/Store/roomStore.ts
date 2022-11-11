@@ -87,23 +87,15 @@ const useRoomStore = create(
 
         }
     }),
-    updateViewRoomMessages: (messages, connectedUserId) => {
-        if(connectedUserId !== null) {
+    updateViewRoomMessages: (messages) => {
             set((state) => {
                 const roomIndex = state.rooms.findIndex((room) => room.room === messages[0].room)
-                if(roomIndex) {
-                    console.log("room before", state.rooms[roomIndex].messages)
-                    const updatedMessages = state.rooms[roomIndex].messages.map((message) => {
-                        if(message.view === false && message.user !== connectedUserId) {
-                            message.view = true
-                        }
-                        return message
-                    })
-                    console.log("room after", updatedMessages)
+                if(roomIndex !== -1) {
+                    const room = {...state.rooms[roomIndex]}
+                    const updatedMessages = room.messages.map((oldMessage) => messages.find((newMessage) => newMessage.id === oldMessage.id) || oldMessage)
                     state.rooms[roomIndex].messages = updatedMessages
                 }
             })
-        }
     }
         
     })),

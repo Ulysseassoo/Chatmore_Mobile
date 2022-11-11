@@ -25,11 +25,10 @@ const Home = () => {
 				})
 				channel
 					.on("broadcast", { event: "message" }, (payload) => {
-						console.log(payload, "message sent")
 						addMessageToRoom(payload.payload.message)
 					})
 					.on("presence", { event: "sync" }, () => setRoomUsers({ ...channel.presenceState() }, room.room.toString()))
-					// .on("broadcast", { event: "readMessages" }, (payload) => updateViewRoomMessages(payload.payload.messages, session?.user.id))
+					.on("broadcast", { event: "readMessages" }, (payload) => updateViewRoomMessages(payload.payload.messages, session?.user.id))
 					.subscribe(async (status) => {
 						if (status === "SUBSCRIBED") {
 							console.log(status, "to room", room.room)

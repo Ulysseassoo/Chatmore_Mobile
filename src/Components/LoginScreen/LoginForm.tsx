@@ -17,7 +17,6 @@ const LoginForm = () => {
 	const { handleSubmit, control } = useForm<FormData>()
 
 	const onSubmit = async (formData: FormData) => {
-		console.log(formData)
 		try {
 			const { error, data } = await supabase.auth.signInWithPassword(formData)
 			if (error) throw error
