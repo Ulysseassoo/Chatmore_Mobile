@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Home from "../Screens/HomeStack/Home"
-import { Box, Flex, HStack, Icon, Input, Pressable, Text, useToast } from "native-base"
+import { Box, Flex, HStack, Icon, Input, Menu, Pressable, Text, useToast } from "native-base"
 import { darktheme } from "../../Theme/globalTheme"
 import { SimpleLineIcons, AntDesign } from "@expo/vector-icons"
 import ContactScreen from "../Screens/HomeStack/ContactScreen"
@@ -11,6 +11,9 @@ import { Animated, Dimensions } from "react-native"
 import { supabase } from "../../Supabase/supabaseClient"
 import ChatConversationScreen from "../Screens/HomeStack/ChatConversationScreen"
 import ChatConversationHeader from "../Screens/HomeStack/ChatConversationHeader"
+import ParametersScreen from "../Screens/HomeStack/ParametersScreen"
+import { useNavigation } from "@react-navigation/core"
+import ProfileParametersScreen from "../Screens/HomeStack/ProfileParametersScreen"
 
 type HomeStackParamList = {
 	Home: undefined
@@ -18,6 +21,9 @@ type HomeStackParamList = {
 	ChatConversation: {
 		room_id: number | undefined
 	}
+	Parameters: undefined
+	ProfileParams: undefined
+	DiscussionsParams: undefined
 }
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>()
@@ -27,6 +33,7 @@ const HomeStackScreens = () => {
 	const isContactResearchActive = useSettingsStore((state) => state.isContactResearchActive)
 	const setProfiles = useSettingsStore((state) => state.setProfiles)
 	const toast = useToast()
+	const navigation = useNavigation()
 
 	const insets = useSafeAreaInsets()
 	const windowWidth = Dimensions.get("screen").width
@@ -80,13 +87,52 @@ const HomeStackScreens = () => {
 								<Icon as={AntDesign} name="search1" color={darktheme.textColor} />
 							</Pressable>
 
-							<Pressable>
-								<Icon as={SimpleLineIcons} name="options-vertical" color={darktheme.textColor} />
-							</Pressable>
+							<Menu
+								bg={darktheme.headerMenuColor}
+								w="190"
+								color="white"
+								trigger={(triggerProps) => {
+									return (
+										<Pressable accessibilityLabel="More options menu" {...triggerProps}>
+											<Icon as={SimpleLineIcons} name="options-vertical" color={darktheme.textColor} />
+										</Pressable>
+									)
+								}}>
+								<Menu.Item color="white" onPress={() => navigation.navigate("Parameters")}>
+									<Text color="white">Parameters</Text>
+								</Menu.Item>
+							</Menu>
 						</HStack>
 					)
 				}}
 			/>
+
+			<HomeStack.Screen
+				name="Parameters"
+				component={ParametersScreen}
+				options={{
+					title: "Parameters",
+					headerStyle: {
+						backgroundColor: darktheme.headerMenuColor
+					},
+					headerBackground: () => <Box borderBottomColor={"none"} />,
+					headerTintColor: "white"
+				}}
+			/>
+
+			<HomeStack.Screen
+				name="ProfileParams"
+				component={ProfileParametersScreen}
+				options={{
+					title: "Profile",
+					headerStyle: {
+						backgroundColor: darktheme.headerMenuColor
+					},
+					headerBackground: () => <Box borderBottomColor={"none"} />,
+					headerTintColor: "white"
+				}}
+			/>
+
 			<HomeStack.Screen
 				name="Contacts"
 				component={ContactScreen}

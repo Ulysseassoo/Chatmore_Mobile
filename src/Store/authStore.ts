@@ -13,6 +13,7 @@ type State =  {
 type Actions = {
   setLoggedIn: (session: Session) => void
   setLoggedOut: () => void;
+  setProfile: (profile: Profile) => void;
 };
 
 const initialState: State = {
@@ -32,6 +33,9 @@ const useAuthStore = create(
           state.isLoggedIn = true;
         })
       },
+      setProfile: async (profile) => set((state) => {
+        state.profile = profile
+      }),
     setLoggedOut: () =>
         set((state) => {
           state.session = initialState.session;

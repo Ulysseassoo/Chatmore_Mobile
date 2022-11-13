@@ -7,4 +7,7 @@ export type RootStackParamList = {
     ChatConversation: {
         room_id: number | undefined
     }
+    Parameters: undefined
+    ProfileParams: undefined
+    DiscussionsParams: undefined
 }
