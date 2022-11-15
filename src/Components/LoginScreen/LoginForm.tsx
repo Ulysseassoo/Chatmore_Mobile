@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormControl, Input, Stack, Text } from "native-base"
+import { Box, Button, Flex, FormControl, Input, Stack, Text, useToast } from "native-base"
 import React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { darktheme } from "../../Theme/globalTheme"
@@ -6,6 +6,7 @@ import * as Constants from "../../Constants/index"
 import FormInput from "../FormInput"
 import { supabase } from "../../Supabase/supabaseClient"
 import useAuthStore from "../../Store/authStore"
+import { AuthError } from "@supabase/supabase-js"
 
 interface FormData {
 	email: string
@@ -15,6 +16,7 @@ interface FormData {
 const LoginForm = () => {
 	const setLoggedIn = useAuthStore((state) => state.setLoggedIn)
 	const { handleSubmit, control } = useForm<FormData>()
+	const toast = useToast()
 
 	const onSubmit = async (formData: FormData) => {
 		try {
@@ -23,8 +25,11 @@ const LoginForm = () => {
 			if (data.session !== null) {
 				setLoggedIn(data.session)
 			}
-		} catch (error) {
-			console.log(error)
+		} catch (error: any) {
+			toast.show({
+				description: error.error_description || error.message,
+				colorScheme: "danger"
+			})
 		}
 	}
 

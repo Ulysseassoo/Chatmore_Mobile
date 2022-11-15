@@ -140,58 +140,66 @@ const HomeStackScreens = () => {
 					headerStyle: {
 						backgroundColor: darktheme.headerMenuColor
 					},
-					header: (props) => (
-						<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 10} paddingBottom={3} paddingX={5}>
-							<Flex justifyContent={"space-between"} alignItems="center" flexDir="row" position="relative" overflow="hidden">
-								<HStack space={8} alignItems="center">
-									<Pressable onPress={props.navigation.goBack}>
-										<Icon as={AntDesign} name="arrowleft" color="white" size={6} />
-									</Pressable>
-									<Text color="white" fontSize="xl" fontWeight="bold">
-										{props.route.name}
-									</Text>
-								</HStack>
+					header: (props) => {
+						return (
+							<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 12} paddingBottom={3} paddingX={5}>
+								<Flex justifyContent={"space-between"} alignItems="center" flexDir="row" position="relative" overflow="hidden">
+									<HStack space={8} alignItems="center">
+										<Pressable onPress={props.navigation.goBack}>
+											<Icon as={AntDesign} name="arrowleft" color="white" size={6} />
+										</Pressable>
+										<Text color="white" fontSize="xl" fontWeight="bold">
+											{props.route.name}
+										</Text>
+									</HStack>
 
-								<HStack space="4" alignItems="center">
-									<Pressable onPress={toggleContactResearch}>
-										<Icon as={AntDesign} name="search1" color={darktheme.textColor} />
-									</Pressable>
-								</HStack>
+									<HStack space="4" alignItems="center">
+										<Pressable
+											onPress={toggleContactResearch}
+											_pressed={{
+												bg: darktheme.lineBreakColor
+											}}
+											borderRadius={"full"}
+											p="1.5">
+											<Icon as={AntDesign} name="search1" color={darktheme.textColor} />
+										</Pressable>
+									</HStack>
 
-								<Animated.View
-									style={{
-										transform: [{ translateX: x }],
-										top: 0,
-										position: "absolute",
-										height: "100%",
-										width: "100%"
-									}}>
-									<Flex bg={darktheme.headerMenuColor} height="full" width="full" alignItems={"center"}>
-										<Animated.View
-											style={{ opacity: opacity, height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-											<Input
-												InputLeftElement={
-													<Pressable
-														onPress={() => {
-															toggleContactResearch()
-														}}
-														zIndex={10}>
-														<Icon as={AntDesign} name="arrowleft" color="gray.500" size={6} />
-													</Pressable>
-												}
-												color="white"
-												placeholder="Search a user to chat with..."
-												variant="unstyled"
-												focusOutlineColor={"white"}
-												size="lg"
-												onChangeText={handleInputText}
-											/>
-										</Animated.View>
-									</Flex>
-								</Animated.View>
-							</Flex>
-						</Box>
-					),
+									<Animated.View
+										style={{
+											transform: [{ translateX: x }],
+											top: 0,
+											position: "absolute",
+											height: "100%",
+											width: "100%"
+										}}>
+										<Flex bg={darktheme.headerMenuColor} height="full" width="full" alignItems={"center"}>
+											<Animated.View
+												style={{ opacity: opacity, height: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+												<Input
+													InputLeftElement={
+														<Pressable
+															onPress={() => {
+																toggleContactResearch()
+															}}
+															zIndex={10}>
+															<Icon as={AntDesign} name="arrowleft" color="gray.500" size={6} />
+														</Pressable>
+													}
+													color="white"
+													placeholder="Search a user to chat with..."
+													variant="unstyled"
+													focusOutlineColor={"white"}
+													size="lg"
+													onChangeText={handleInputText}
+												/>
+											</Animated.View>
+										</Flex>
+									</Animated.View>
+								</Flex>
+							</Box>
+						)
+					},
 					headerTintColor: "white"
 				}}
 			/>

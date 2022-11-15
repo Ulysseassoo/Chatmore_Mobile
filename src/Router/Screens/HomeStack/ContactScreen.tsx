@@ -1,5 +1,5 @@
 import { Avatar, Box, FlatList, Flex, HStack, Icon, Image, Input, Pressable, Text, View, VStack } from "native-base"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { darktheme } from "../../../Theme/globalTheme"
 import { FontAwesome } from "@expo/vector-icons"
@@ -69,6 +69,11 @@ const ContactScreen = () => {
 		})
 	}
 
+	const getActualRoomsUser = () => {
+		const users = rooms.map((room) => room.users[0])
+		return users
+	}
+
 	const renderItem: ListRenderItem<{
 		id: string
 		updated_at?: string | undefined
@@ -82,7 +87,13 @@ const ContactScreen = () => {
 			<Pressable
 				onPress={() => {
 					goToUserRoom(item.username)
-				}}>
+				}}
+				_pressed={{
+					bg: darktheme.lineBreakColor
+				}}
+				px="4"
+				py="2"
+				borderRadius="xl">
 				<HStack space="4" alignItems={"center"}>
 					<Avatar
 						source={{
@@ -111,7 +122,14 @@ const ContactScreen = () => {
 	return (
 		<Box bg={darktheme.primaryColor} height="full" position="relative">
 			<SafeAreaView>
-				<FlatList data={contactProfiles} renderItem={renderItem} keyExtractor={({ id }) => id} />
+				<Text px="6" color={darktheme.textColor} fontSize={"md"}>
+					{contactProfiles.length === 0 ? "Contacts actuels" : "Contacts recherchés"}
+				</Text>
+				{contactProfiles.length <= 0 ? (
+					<FlatList data={getActualRoomsUser()} renderItem={renderItem} keyExtractor={({ id }) => id} />
+				) : (
+					<FlatList data={contactProfiles} renderItem={renderItem} keyExtractor={({ id }) => id} />
+				)}
 			</SafeAreaView>
 		</Box>
 	)
