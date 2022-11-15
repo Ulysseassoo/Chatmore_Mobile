@@ -20,6 +20,7 @@ import { darktheme } from "../../Theme/globalTheme"
 import { MaterialIcons } from "@expo/vector-icons"
 import { Dimensions, TextInput } from "react-native"
 import { supabase } from "../../Supabase/supabaseClient"
+import ActionSheetInput from "./ActionSheetInput"
 
 const ProfileNameInput = () => {
 	const profile = useAuthStore((state) => state.profile)
@@ -36,6 +37,10 @@ const ProfileNameInput = () => {
 		}
 	}, [isOpen])
 
+	const updateUsername = (text: string) => {
+		setUsernameText(text)
+	}
+
 	const changeUsername = async () => {
 		try {
 			if (profile !== null) {
@@ -50,7 +55,7 @@ const ProfileNameInput = () => {
 				onClose()
 				await setProfile(data)
 				toast.show({
-					description: "Your profile picture has been updated !",
+					description: "Your profile has been updated !",
 					colorScheme: "success"
 				})
 			}
@@ -78,65 +83,14 @@ const ProfileNameInput = () => {
 				</VStack>
 			</Pressable>
 
-			<Actionsheet isOpen={isOpen} onClose={onClose} flex="1" display="flex">
-				<KeyboardAvoidingView behavior="position">
-					<Actionsheet.Content bg={darktheme.headerMenuColor}>
-						<Actionsheet.Item
-							bg={darktheme.headerMenuColor}
-							_pressed={{
-								bg: darktheme.headerMenuColor
-							}}
-							width={w}>
-							<VStack space="2">
-								<FormControl width={w}>
-									<FormControl.Label>
-										<Text color="white" fontSize={"md"} fontWeight="bold">
-											Enter your username
-										</Text>
-									</FormControl.Label>
-									<Input
-										w={w - 30}
-										ref={usernameRef}
-										borderBottomColor={darktheme.accentColor}
-										fontSize="sm"
-										color="white"
-										placeholder=""
-										autoFocus={true}
-										defaultValue={profile?.username}
-										variant="underlined"
-										selectionColor={darktheme.accentColor}
-										selectTextOnFocus
-										onChangeText={(text) => setUsernameText(text)}
-									/>
-								</FormControl>
-								<Flex width={w - 30} alignItems="flex-end">
-									<HStack space="3">
-										<Pressable
-											onPress={onClose}
-											_pressed={{
-												bg: darktheme.lineBreakColor
-											}}>
-											<Text color={darktheme.textColor} py="2" px="3" textTransform={"uppercase"}>
-												Cancel
-											</Text>
-										</Pressable>
-
-										<Pressable
-											onPress={changeUsername}
-											_pressed={{
-												bg: darktheme.lineBreakColor
-											}}>
-											<Text color={darktheme.textColor} py="2" px="3" textTransform={"uppercase"}>
-												Save
-											</Text>
-										</Pressable>
-									</HStack>
-								</Flex>
-							</VStack>
-						</Actionsheet.Item>
-					</Actionsheet.Content>
-				</KeyboardAvoidingView>
-			</Actionsheet>
+			<ActionSheetInput
+				isOpen={isOpen}
+				onClose={onClose}
+				onOpen={onOpen}
+				defaultValue={profile?.username}
+				onChangeText={updateUsername}
+				saveInformation={changeUsername}
+			/>
 		</>
 	)
 }

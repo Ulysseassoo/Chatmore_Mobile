@@ -1,7 +1,8 @@
-import { Box, Center, Flex, HStack, Image, KeyboardAvoidingView, Text, View, VStack } from "native-base"
+import { Box, Center, Flex, HStack, Icon, Image, KeyboardAvoidingView, Pressable, Text, View, VStack } from "native-base"
 import React, { useState } from "react"
 import { Platform } from "react-native"
 import BackgroundImage from "../../../Components/ProfileParametersScreen/BackgroundImage"
+import ProfileAboutInput from "../../../Components/ProfileParametersScreen/ProfileAboutInput"
 import ProfileNameInput from "../../../Components/ProfileParametersScreen/ProfileNameInput"
 import ProfilePictureInput from "../../../Components/ProfileParametersScreen/ProfilePictureInput"
 import useAuthStore from "../../../Store/authStore"
@@ -17,6 +18,7 @@ const ProfileParametersScreen = () => {
 					<ProfilePictureInput />
 					<ProfileNameInput />
 				</HStack>
+				<ProfileAboutInput />
 			</Box>
 		</Flex>
 	)
