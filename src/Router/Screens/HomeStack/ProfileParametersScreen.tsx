@@ -4,6 +4,7 @@ import { Platform } from "react-native"
 import BackgroundImage from "../../../Components/ProfileParametersScreen/BackgroundImage"
 import ProfileAboutInput from "../../../Components/ProfileParametersScreen/ProfileAboutInput"
 import ProfileNameInput from "../../../Components/ProfileParametersScreen/ProfileNameInput"
+import ProfilePhoneInput from "../../../Components/ProfileParametersScreen/ProfilePhoneInput"
 import ProfilePictureInput from "../../../Components/ProfileParametersScreen/ProfilePictureInput"
 import useAuthStore from "../../../Store/authStore"
 import { darktheme } from "../../../Theme/globalTheme"
@@ -19,6 +20,7 @@ const ProfileParametersScreen = () => {
 					<ProfileNameInput />
 				</HStack>
 				<ProfileAboutInput />
+				<ProfilePhoneInput />
 			</Box>
 		</Flex>
 	)
