@@ -21,6 +21,7 @@ type Actions = {
     getChatrooms: (user: User) => void;
     addRoom: (room: RoomState) => void;
     addMessageToRoom: (message: Message) => void;
+    emptyRooms: () => void;
     updateViewRoomMessages: (messages: Message[], connectedUserId: string | undefined) => void;
 };
 
@@ -96,7 +97,11 @@ const useRoomStore = create(
                     state.rooms[roomIndex].messages = updatedMessages
                 }
             })
-    }
+    },
+    emptyRooms: () => set((state) => {
+        state.rooms = initialState.rooms
+        state.isLoading = initialState.isLoading
+    })
         
     })),
     

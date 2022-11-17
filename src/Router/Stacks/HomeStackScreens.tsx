@@ -14,6 +14,8 @@ import ChatConversationHeader from "../Screens/HomeStack/ChatConversationHeader"
 import ParametersScreen from "../Screens/HomeStack/ParametersScreen"
 import { useNavigation } from "@react-navigation/core"
 import ProfileParametersScreen from "../Screens/HomeStack/ProfileParametersScreen"
+import ProfileUserScreen from "../Screens/HomeStack/ProfileUserScreen"
+import { Profile } from "../../Interface/Types"
 
 type HomeStackParamList = {
 	Home: undefined
@@ -24,6 +26,9 @@ type HomeStackParamList = {
 	Parameters: undefined
 	ProfileParams: undefined
 	DiscussionsParams: undefined
+	ProfileUser: {
+		profile: Profile
+	}
 }
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>()
@@ -212,6 +217,19 @@ const HomeStackScreens = () => {
 						backgroundColor: darktheme.headerMenuColor
 					},
 					header: (props) => <ChatConversationHeader />
+				}}
+			/>
+
+			<HomeStack.Screen
+				name="ProfileUser"
+				component={ProfileUserScreen}
+				options={{
+					title: "",
+					headerStyle: {
+						backgroundColor: darktheme.profileColor
+					},
+					headerTintColor: "white",
+					headerShadowVisible: false
 				}}
 			/>
 		</HomeStack.Navigator>

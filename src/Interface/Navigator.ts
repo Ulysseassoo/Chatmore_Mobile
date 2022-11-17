@@ -1,3 +1,4 @@
+import { Profile } from "./Types"
 
 export type RootStackParamList = {
 	Login: undefined
@@ -10,4 +11,7 @@ export type RootStackParamList = {
     Parameters: undefined
     ProfileParams: undefined
     DiscussionsParams: undefined
+	ProfileUser: {
+		profile: Profile
+	}
 }

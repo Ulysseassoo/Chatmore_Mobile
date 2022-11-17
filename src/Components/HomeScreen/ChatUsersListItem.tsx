@@ -17,7 +17,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 	const user = item.users[0]
 	const navigation = useNavigation()
 	const session = useAuthStore((state) => state.session)
-	const actualMessage = useMemo(() => item.messages[item.messages.length - 1], [item.messages])
+	const actualMessage = useMemo(() => item.messages[0], [item.messages])
 	const dimensions = Dimensions.get("screen")
 	const goToUserRoom = (roomId: number) => {
 		navigation.navigate("ChatConversation", {

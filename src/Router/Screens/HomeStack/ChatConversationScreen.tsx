@@ -90,8 +90,8 @@ const ChatConversationScreen = () => {
 			<Flex px="4" height="full" width="full" justifyContent={"space-between"}>
 				<FlatList
 					contentContainerStyle={{
-						display: "flex",
-						flexDirection: "column-reverse"
+						display: "flex"
+						// flexDirection: "column-reverse"
 						// alignItems: "baseline"
 					}}
 					inverted

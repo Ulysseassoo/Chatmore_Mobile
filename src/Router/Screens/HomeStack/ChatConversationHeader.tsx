@@ -1,18 +1,12 @@
-import { Avatar, Box, Flex, HStack, Icon, Text } from "native-base"
-import React, { useEffect, useMemo, useState } from "react"
-import { Pressable } from "react-native"
+import { Avatar, Box, Flex, HStack, Icon, Text, Pressable } from "native-base"
+import React, { useMemo } from "react"
 import { darktheme } from "../../../Theme/globalTheme"
 import { SimpleLineIcons, AntDesign } from "@expo/vector-icons"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { NativeStackHeaderProps } from "@react-navigation/native-stack"
 import useRoomStore from "../../../Store/roomStore"
-import { ParamListBase, useNavigation, useRoute } from "@react-navigation/core"
-import { RootStackParamList } from "../../../Interface/Navigator"
+import { useNavigation, useRoute } from "@react-navigation/core"
 import useOnlineStore from "../../../Store/onlineStore"
-import { supabase } from "../../../Supabase/supabaseClient"
-import useAuthStore from "../../../Store/authStore"
 import useUserIsTypying from "../../../Hooks/useUserIsTypying"
-// import { getChannelRoom } from "./ChatConversationBottom"
 
 interface Params {
 	room_id: number
@@ -40,16 +34,16 @@ const ChatConversationHeader = () => {
 		return true
 	}, [onlineUsers, userToChat])
 
-	if (!actualRoom) return <></>
+	if (!actualRoom || !userToChat) return <></>
 
 	return (
 		<Box bg={darktheme.headerMenuColor} paddingTop={insets.top - 14} paddingBottom={3} paddingX={4}>
 			<Flex justifyContent={"space-between"} alignItems="center" flexDir="row" position="relative" overflow="hidden">
-				<HStack space={2} alignItems="center">
+				<HStack space={2} alignItems="center" flex="1">
 					<Pressable onPress={navigation.goBack}>
 						<Icon as={AntDesign} name="arrowleft" color="white" size={6} />
 					</Pressable>
-					<HStack alignItems={"center"} space="4">
+					<HStack alignItems={"center"} space="4" flex="1">
 						<Avatar
 							source={{
 								uri: userToChat?.avatar_url
@@ -58,7 +52,18 @@ const ChatConversationHeader = () => {
 							size={"sm"}>
 							{userToChat?.username && userToChat?.username[0].toUpperCase() + userToChat?.username[1].toUpperCase()}
 						</Avatar>
-						<Box>
+						<Pressable
+							_pressed={{
+								bg: darktheme.lineBreakColor
+							}}
+							px="1.5"
+							borderRadius={"md"}
+							onPress={() =>
+								navigation.navigate("ProfileUser", {
+									profile: userToChat
+								})
+							}
+							flex="1">
 							<Text color="white" fontSize="lg" fontWeight="bold">
 								{userToChat?.username}
 							</Text>
@@ -75,11 +80,11 @@ const ChatConversationHeader = () => {
 									Is writing...
 								</Text>
 							)}
-						</Box>
+						</Pressable>
 					</HStack>
 				</HStack>
 
-				<HStack space="4" alignItems="center">
+				<HStack space="4" alignItems="center" flex="0">
 					<Pressable>
 						<Icon as={SimpleLineIcons} name="options-vertical" color={"white"} />
 					</Pressable>

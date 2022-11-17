@@ -3,6 +3,9 @@ import React from "react"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/core"
+import { supabase } from "../../../Supabase/supabaseClient"
+import useAuthStore from "../../../Store/authStore"
+import useRoomStore from "../../../Store/roomStore"
 
 const parameters = [
 	{
@@ -21,6 +24,20 @@ const parameters = [
 
 const ParametersScreen = () => {
 	const navigation = useNavigation()
+	const setLoggedOut = useAuthStore((state) => state.setLoggedOut)
+	const emptyRooms = useRoomStore((state) => state.emptyRooms)
+
+	const logoutUser = async () => {
+		try {
+			const { error } = await supabase.auth.signOut()
+			console.log("signedOut")
+			if (error) throw error
+			emptyRooms()
+			setLoggedOut()
+		} catch (error: any) {
+			console.log(error)
+		}
+	}
 	return (
 		<ScrollView bg={darktheme.profileColor} p="5">
 			{parameters.map((param) => (
@@ -39,6 +56,19 @@ const ParametersScreen = () => {
 					</HStack>
 				</Pressable>
 			))}
+			<Pressable onPress={logoutUser}>
+				<HStack alignItems="center" space="4" mb="4">
+					<Icon as={MaterialCommunityIcons} name={"logout"} size={6} color={darktheme.importantColor} />
+					<VStack space="0.25">
+						<Text fontSize={"lg"} color="white">
+							Logout
+						</Text>
+						<Text fontSize={"sm"} color={darktheme.textColor}>
+							Disconnect from your account
+						</Text>
+					</VStack>
+				</HStack>
+			</Pressable>
 		</ScrollView>
 	)
 }
