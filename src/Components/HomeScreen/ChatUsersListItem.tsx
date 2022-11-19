@@ -8,6 +8,7 @@ import { Dimensions } from "react-native"
 import useAuthStore from "../../Store/authStore"
 import useUserIsTypying from "../../Hooks/useUserIsTypying"
 import { dateFormatted } from "../../Router/Screens/HomeStack/ChatMessage"
+import useIsUserBlocked from "../../Hooks/useIsUserBlocked"
 
 interface Props {
 	item: RoomState
@@ -18,6 +19,8 @@ const ChatUsersListItem = ({ item }: Props) => {
 	const navigation = useNavigation()
 	const session = useAuthStore((state) => state.session)
 	const actualMessage = useMemo(() => item.messages[0], [item.messages])
+	const isUserBlocked = useIsUserBlocked(user.id)
+
 	const dimensions = Dimensions.get("screen")
 	const goToUserRoom = (roomId: number) => {
 		navigation.navigate("ChatConversation", {
@@ -33,6 +36,59 @@ const ChatUsersListItem = ({ item }: Props) => {
 			if (message.user !== user_id) return message.view === false
 		})
 		return count.length
+	}
+
+	if (isUserBlocked) {
+		return (
+			<Box width={dimensions.width} position="relative">
+				<Pressable
+					onPress={() => {
+						goToUserRoom(item.room)
+					}}
+					_pressed={{
+						bg: darktheme.lineBreakColor
+					}}
+					p="4">
+					<HStack space="4" alignItems={"center"}>
+						<Avatar
+							source={{
+								uri: user.avatar_url
+							}}
+							height="10"
+							width="10"
+							borderRadius={"full"}
+							bg="yellow.500">
+							{user.username && user?.username[0].toUpperCase() + user?.username[1].toUpperCase()}
+						</Avatar>
+
+						<Flex justifyContent={"space-between"} width={"full"} safeAreaRight pr="16">
+							<Flex justifyContent={"space-between"} alignItems="center" flexDir="row">
+								<Text color="white" fontWeight={"bold"}>
+									{user.username}
+								</Text>
+							</Flex>
+							<Flex justifyContent={"space-between"} flexDir="row">
+								<HStack alignItems="center" space="1">
+									{isFromConnectedUser && (
+										<Icon as={Ionicons} name="checkmark-done-sharp" color={actualMessage.view ? darktheme.accentColor : "gray.500"} />
+									)}
+									<Text
+										color={isUserTypying ? darktheme.accentColor : "gray.400"}
+										ellipsizeMode="tail"
+										numberOfLines={1}
+										maxW={dimensions.width - 150}
+										display="flex"
+										flexDir="row"
+										alignItems="center">
+										You have blocked this user
+									</Text>
+								</HStack>
+							</Flex>
+						</Flex>
+					</HStack>
+				</Pressable>
+			</Box>
+		)
 	}
 
 	return (

@@ -2,6 +2,17 @@ import { Message } from "../Interface/Types";
 import { CreateMessage } from "../Router/Screens/HomeStack/ChatConversationBottom";
 import { supabase } from "../Supabase/supabaseClient";
 
+export interface UserHasBlockedData {
+	created_at: Date
+	blocking_user_id: string | undefined
+	blocked_user_id: string | undefined
+}
+
+export interface UserHasBlockedDelete {
+	blocked_user_id: string | undefined 
+	blocking_user_id: string | undefined
+}
+
 export const getUserRooms = async (user_id: string) => {
 	try {
 		const { data, error }: { data: any; error: any } = await supabase.from("userHasRoom").select("*").eq("user", user_id)
@@ -54,6 +65,26 @@ export const deleteMessageById = async (messageID: number) => {
 export const updateRoomMessages = async (messageData: Message[]) => {
 	try {
 		const { data, error } = await supabase.from("message").upsert(messageData).select()
+		if (error) throw error
+		return data
+	} catch (error: any) {
+		return error
+	}
+}
+
+export const createUserBlock = async (userBlock: UserHasBlockedData) => {
+	try {
+		const { data, error } = await supabase.from("userHasBlocked").insert(userBlock).select().single()
+		if (error) throw error
+		return data
+	} catch (error: any) {
+		return error
+	}
+}
+
+export const deleteUserBlock = async (usersDelete: UserHasBlockedDelete) => {
+	try {
+		const { data, error } = await supabase.from("userHasBlocked").delete().match(usersDelete)
 		if (error) throw error
 		return data
 	} catch (error: any) {

@@ -11,6 +11,7 @@ import useAuthStore from "../../../Store/authStore"
 import { createMessage } from "../../../Api/API"
 import { supabase } from "../../../Supabase/supabaseClient"
 import useOnlineStore from "../../../Store/onlineStore"
+import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 
 interface FormData {
 	message: string
@@ -31,7 +32,7 @@ const ChatConversationBottom = () => {
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const channels = supabase.getChannels()
 	const addMessageToRoom = useRoomStore((state) => state.addMessageToRoom)
-
+	const isUserBlocked = useIsUserBlocked(actualRoom?.users[0]?.id)
 	const getChannelRoom = useMemo(() => {
 		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + actualRoom?.room.toString()!)
 		if (channelRoom) return channelRoom
@@ -125,13 +126,21 @@ const ChatConversationBottom = () => {
 					}}
 				/>
 
-				<Box p="4" height="10" width="10" borderRadius={"full"} bg={darktheme.accentColor}>
+				<Pressable
+					onPress={handleSubmit(onSubmit)}
+					isDisabled={isUserBlocked}
+					p="4"
+					height="10"
+					width="10"
+					borderRadius={"full"}
+					bg={darktheme.accentColor}
+					_disabled={{ bg: darktheme.accentColorHover }}>
 					<Center height="full" width="full">
-						<Pressable onPress={handleSubmit(onSubmit)}>
+						<Pressable>
 							<Icon as={MaterialCommunityIcons} name="send" color="white" size={6} />
 						</Pressable>
 					</Center>
-				</Box>
+				</Pressable>
 			</HStack>
 		</FormControl>
 	)

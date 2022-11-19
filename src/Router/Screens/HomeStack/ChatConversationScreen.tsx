@@ -1,8 +1,9 @@
 import { useRoute } from "@react-navigation/core"
-import { Box, FlatList, Flex, Text, View } from "native-base"
+import { Box, Center, FlatList, Flex, Pressable, Text, View } from "native-base"
 import React, { useEffect, useMemo } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { updateRoomMessages } from "../../../Api/API"
+import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import useRoomStore from "../../../Store/roomStore"
@@ -20,6 +21,7 @@ const ChatConversationScreen = () => {
 	const session = useAuthStore((state) => state.session)
 	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
 	const channels = supabase.getChannels()
+	const isUserBlocked = useIsUserBlocked(actualRoom.users[0]?.id)
 	const getChannelRoom = useMemo(() => {
 		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + actualRoom?.room.toString()!)
 		if (channelRoom) return channelRoom
@@ -98,6 +100,25 @@ const ChatConversationScreen = () => {
 					renderItem={({ item }) => <ChatMessage item={item} />}
 					data={actualRoom?.messages}
 				/>
+				{isUserBlocked && (
+					<Center>
+						<Pressable
+							_pressed={{
+								bg: darktheme.lineBreakColor
+							}}
+							textAlign={"center"}
+							my="2.5"
+							shadow="6"
+							py="2"
+							px="4"
+							bg={darktheme.headerMenuColor}
+							borderRadius="md">
+							<Text color={darktheme.textColor} fontSize="xs">
+								You have blocked this user. Click here to unblock him.
+							</Text>
+						</Pressable>
+					</Center>
+				)}
 				<ChatConversationBottom />
 			</Flex>
 		</Box>

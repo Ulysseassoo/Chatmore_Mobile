@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {
+ export interface paths {
   "/": {
     get: {
       responses: {
@@ -414,6 +414,102 @@ export interface paths {
       };
     };
   };
+  "/userHasBlocked": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.userHasBlocked.id"];
+          created_at?: parameters["rowFilter.userHasBlocked.created_at"];
+          blocking_user_id?: parameters["rowFilter.userHasBlocked.blocking_user_id"];
+          blocked_user_id?: parameters["rowFilter.userHasBlocked.blocked_user_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["userHasBlocked"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** userHasBlocked */
+          userHasBlocked?: definitions["userHasBlocked"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.userHasBlocked.id"];
+          created_at?: parameters["rowFilter.userHasBlocked.created_at"];
+          blocking_user_id?: parameters["rowFilter.userHasBlocked.blocking_user_id"];
+          blocked_user_id?: parameters["rowFilter.userHasBlocked.blocked_user_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.userHasBlocked.id"];
+          created_at?: parameters["rowFilter.userHasBlocked.created_at"];
+          blocking_user_id?: parameters["rowFilter.userHasBlocked.blocking_user_id"];
+          blocked_user_id?: parameters["rowFilter.userHasBlocked.blocked_user_id"];
+        };
+        body: {
+          /** userHasBlocked */
+          userHasBlocked?: definitions["userHasBlocked"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/userHasRoom": {
     get: {
       parameters: {
@@ -618,7 +714,7 @@ export interface definitions {
     /** Format: timestamp with time zone */
     updated_at?: string;
     /** Format: text */
-    username?: string;
+    username: string;
     /** Format: text */
     avatar_url?: string;
     /** Format: text */
@@ -641,6 +737,32 @@ export interface definitions {
      * @default now()
      */
     created_at?: string;
+  };
+  /** @description User blocked another user */
+  userHasBlocked: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    created_at?: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `profiles.id`.<fk table='profiles' column='id'/>
+     */
+    blocking_user_id: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `profiles.id`.<fk table='profiles' column='id'/>
+     */
+    blocked_user_id: string;
   };
   /** @description Users in a room */
   userHasRoom: {
@@ -745,6 +867,16 @@ export interface parameters {
   "rowFilter.room.id": string;
   /** Format: timestamp with time zone */
   "rowFilter.room.created_at": string;
+  /** @description userHasBlocked */
+  "body.userHasBlocked": definitions["userHasBlocked"];
+  /** Format: bigint */
+  "rowFilter.userHasBlocked.id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.userHasBlocked.created_at": string;
+  /** Format: uuid */
+  "rowFilter.userHasBlocked.blocking_user_id": string;
+  /** Format: uuid */
+  "rowFilter.userHasBlocked.blocked_user_id": string;
   /** @description userHasRoom */
   "body.userHasRoom": definitions["userHasRoom"];
   /** Format: bigint */

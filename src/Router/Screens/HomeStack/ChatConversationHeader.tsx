@@ -7,6 +7,7 @@ import useRoomStore from "../../../Store/roomStore"
 import { useNavigation, useRoute } from "@react-navigation/core"
 import useOnlineStore from "../../../Store/onlineStore"
 import useUserIsTypying from "../../../Hooks/useUserIsTypying"
+import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 
 interface Params {
 	room_id: number
@@ -26,6 +27,7 @@ const ChatConversationHeader = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const userToChat = actualRoom?.users[0]
+	const isUserBlocked = useIsUserBlocked(userToChat?.id)
 	const userIsTypying = useUserIsTypying(route.params.room_id)
 	const onlineUsers = useOnlineStore((state) => state.onlineUsers)
 	const isUserOnline = useMemo(() => {
@@ -67,7 +69,7 @@ const ChatConversationHeader = () => {
 							<Text color="white" fontSize="lg" fontWeight="bold">
 								{userToChat?.username}
 							</Text>
-							{!userIsTypying && (
+							{!isUserBlocked && !userIsTypying && (
 								<HStack space="1" alignItems={"center"}>
 									<Box height="2" width="2" borderRadius={"full"} bg={isUserOnline ? "green.500" : "red.500"} />
 									<Text fontSize={"xs"} color="white">
@@ -75,7 +77,7 @@ const ChatConversationHeader = () => {
 									</Text>
 								</HStack>
 							)}
-							{userIsTypying && (
+							{!isUserBlocked && userIsTypying && (
 								<Text color="white" fontSize={"xs"}>
 									Is writing...
 								</Text>
