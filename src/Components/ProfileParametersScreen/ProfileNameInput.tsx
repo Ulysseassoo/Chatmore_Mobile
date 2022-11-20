@@ -43,11 +43,11 @@ const ProfileNameInput = () => {
 
 	const changeUsername = async () => {
 		try {
-			if (profile !== null) {
+			if (profile !== null && usernameText !== undefined) {
 				const updates = {
 					id: profile.id,
 					username: usernameText,
-					updated_at: new Date()
+					updated_at: new Date().toISOString()
 				}
 
 				const { error, data } = await supabase.from("profiles").upsert(updates).select().single()
@@ -56,13 +56,13 @@ const ProfileNameInput = () => {
 				await setProfile(data)
 				toast.show({
 					description: "Your profile has been updated !",
-					colorScheme: "success"
+					color: "green.500"
 				})
 			}
 		} catch (error: any) {
 			toast.show({
 				description: error.error_description || error.message,
-				colorScheme: "danger"
+				color: "red.500"
 			})
 		}
 	}

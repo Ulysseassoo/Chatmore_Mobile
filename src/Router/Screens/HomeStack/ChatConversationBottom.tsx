@@ -42,8 +42,8 @@ const ChatConversationBottom = () => {
 	const { handleSubmit, control, setValue } = useForm<FormData>()
 	const onSubmit = async (formData: FormData) => {
 		const content = formData.message
-		const newMessage: CreateMessage = {
-			created_at: new Date(),
+		const newMessage = {
+			created_at: new Date().toISOString(),
 			content,
 			room: actualRoom?.room,
 			user: session?.user.id
@@ -127,7 +127,6 @@ const ChatConversationBottom = () => {
 				/>
 
 				<Pressable
-					onPress={handleSubmit(onSubmit)}
 					isDisabled={isUserBlocked}
 					p="4"
 					height="10"
@@ -136,7 +135,7 @@ const ChatConversationBottom = () => {
 					bg={darktheme.accentColor}
 					_disabled={{ bg: darktheme.accentColorHover }}>
 					<Center height="full" width="full">
-						<Pressable>
+						<Pressable onPress={handleSubmit(onSubmit)}>
 							<Icon as={MaterialCommunityIcons} name="send" color="white" size={6} />
 						</Pressable>
 					</Center>

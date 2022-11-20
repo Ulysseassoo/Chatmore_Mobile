@@ -20,7 +20,7 @@ type State =  {
 type Actions = {
     getChatrooms: (user: User) => void;
     addRoom: (room: RoomState) => void;
-    addMessageToRoom: (message: Message) => void;
+    addMessageToRoom: (message: Message | undefined) => void;
     emptyRooms: () => void;
     updateViewRoomMessages: (messages: Message[], connectedUserId: string | undefined) => void;
 };
@@ -82,10 +82,11 @@ const useRoomStore = create(
           state.rooms.push(room)
         }),
     addMessageToRoom: (message) => set((state) => {
-        const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
-        if(roomIndex !== -1) {
-            state.rooms[roomIndex].messages.push(message)
-
+        if(message !== undefined) {
+            const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
+            if(roomIndex !== -1) {
+                state.rooms[roomIndex].messages = [message,...state.rooms[roomIndex].messages]
+            }
         }
     }),
     updateViewRoomMessages: (messages) => {

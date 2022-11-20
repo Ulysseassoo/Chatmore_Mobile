@@ -1,5 +1,4 @@
-import { UserHasBlocked } from './../Interface/Types';
-import { Profile } from './../Interface/Profile';
+import { Profile, UserHasBlocked } from './../Interface/Types';
 import create from 'zustand'
 import { immer } from "zustand/middleware/immer";
 import { Session } from "@supabase/supabase-js";

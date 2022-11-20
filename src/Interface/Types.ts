@@ -1,8 +1,9 @@
-import { definitions } from "./generated-types";
+import { Database } from "../../DatabaseDefinitions"
 
-export type Profile = definitions["profiles"]
-export type Image = definitions["images"]
-export type Message = definitions["message"]
-export type Room = definitions["room"]
-export type UserHasRoom = definitions["userHasRoom"]
-export type UserHasBlocked = definitions["userHasBlocked"]
+
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"]
+export type Image = Database["public"]["Tables"]["images"]["Row"]
+export type Message = Database["public"]["Tables"]["message"]["Row"]
+export type Room = Database["public"]["Tables"]["room"]["Row"]
+export type UserHasRoom = Database["public"]["Tables"]["userHasRoom"]["Row"]
+export type UserHasBlocked = Database["public"]["Tables"]["userHasBlocked"]["Row"]

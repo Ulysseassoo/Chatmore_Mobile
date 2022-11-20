@@ -23,7 +23,8 @@ const ProfileAboutInput = () => {
 				const updates = {
 					id: profile.id,
 					about: aboutText,
-					updated_at: new Date()
+					updated_at: new Date().toISOString(),
+					username: profile.username
 				}
 
 				const { error, data } = await supabase.from("profiles").upsert(updates).select().single()
@@ -32,13 +33,13 @@ const ProfileAboutInput = () => {
 				await setProfile(data)
 				toast.show({
 					description: "Your profile has been updated !",
-					colorScheme: "success"
+					color: "green.500"
 				})
 			}
 		} catch (error: any) {
 			toast.show({
 				description: error.error_description || error.message,
-				colorScheme: "danger"
+				color: "red.500"
 			})
 		}
 	}

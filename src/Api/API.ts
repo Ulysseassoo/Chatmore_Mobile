@@ -1,5 +1,4 @@
-import { Message } from "../Interface/Types";
-import { CreateMessage } from "../Router/Screens/HomeStack/ChatConversationBottom";
+import { Message, UserHasBlocked } from "../Interface/Types";
 import { supabase } from "../Supabase/supabaseClient";
 
 export interface UserHasBlockedData {
@@ -19,7 +18,7 @@ export const getUserRooms = async (user_id: string) => {
 		if (error) throw error
 		return data
 	} catch (error) {
-		return error
+		console.log(error)
 	}
 }
 
@@ -29,7 +28,7 @@ export const getRoom = async (room_id: string) => {
 		if (error) throw error
 		return data
 	} catch (error) {
-		return error
+		console.log(error)
 	}
 }
 
@@ -39,17 +38,22 @@ export const getRoomMessages = async (room_id: string) => {
 		if (error) throw error
 		return data
 	} catch (error) {
-		return error
+		console.log(error)
 	}
 }
 
-export const createMessage = async (messageData: CreateMessage) => {
+export const createMessage = async (messageData :{
+    created_at: string | null;
+    room: number | undefined;
+    user: string | undefined;
+    content: string;
+}) => {
 	try {
 		const { data, error } = await supabase.from("message").insert(messageData).select().single()
 		if (error) throw error
 		return data
 	} catch (error: any) {
-		return error
+		console.log(error)
 	}
 }
 
@@ -58,7 +62,7 @@ export const deleteMessageById = async (messageID: number) => {
 		const { error } = await supabase.from("message").delete().match({ id: messageID })
 		if (error) throw Error
 	} catch (error) {
-		return error
+		console.log(error)
 	}
 }
 
@@ -68,26 +72,29 @@ export const updateRoomMessages = async (messageData: Message[]) => {
 		if (error) throw error
 		return data
 	} catch (error: any) {
-		return error
+		console.log(error)
 	}
 }
 
-export const createUserBlock = async (userBlock: UserHasBlockedData) => {
+export const createUserBlock = async (userBlock: UserHasBlocked) => {
 	try {
 		const { data, error } = await supabase.from("userHasBlocked").insert(userBlock).select().single()
 		if (error) throw error
 		return data
 	} catch (error: any) {
-		return error
+		console.log(error)
 	}
 }
 
 export const deleteUserBlock = async (usersDelete: UserHasBlockedDelete) => {
 	try {
-		const { data, error } = await supabase.from("userHasBlocked").delete().match(usersDelete)
+		const { data, error } = await supabase.from("userHasBlocked").delete().match({
+			blocking_user_id: usersDelete.blocking_user_id,
+			blocked_user_id: usersDelete.blocked_user_id
+		})
 		if (error) throw error
 		return data
 	} catch (error: any) {
-		return error
+		console.log(error)
 	}
 }

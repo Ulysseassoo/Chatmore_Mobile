@@ -1,16 +1,15 @@
-import { Avatar, Box, FlatList, Flex, HStack, Icon, Image, Input, Pressable, Text, View, VStack } from "native-base"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import { Avatar, Box, FlatList, Flex, HStack, Pressable, Text } from "native-base"
+import React from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { darktheme } from "../../../Theme/globalTheme"
-import { FontAwesome } from "@expo/vector-icons"
 import { supabase } from "../../../Supabase/supabaseClient"
-import { FlatListProps, ListRenderItem, TextInput } from "react-native"
-import { Profile } from "../../../Interface/Profile"
+import { ListRenderItem } from "react-native"
 import useSettingsStore from "../../../Store/settingsStore"
 import useRoomStore, { RoomState } from "../../../Store/roomStore"
 import useAuthStore from "../../../Store/authStore"
 import { useNavigation } from "@react-navigation/core"
 import { User } from "@supabase/supabase-js"
+import { Profile } from "../../../Interface/Types"
 
 const ContactScreen = () => {
 	const contactProfiles = useSettingsStore((state) => state.contactProfiles)
@@ -25,11 +24,11 @@ const ContactScreen = () => {
 		return false
 	}
 
-	const createRoom = async (userId: string, user: User) => {
+	const createRoom = async (userId: string, user: Profile) => {
 		// Create a room
 		const { data: roomData, error: roomError }: { data: any; error: any } = await supabase
 			.from("room")
-			.insert({ created_at: new Date() })
+			.insert({ created_at: new Date().toISOString() })
 			.select()
 			.single()
 		if (roomError) throw roomError
@@ -74,15 +73,7 @@ const ContactScreen = () => {
 		return users
 	}
 
-	const renderItem: ListRenderItem<{
-		id: string
-		updated_at?: string | undefined
-		username?: string | undefined
-		avatar_url?: string | undefined
-		email?: string | undefined
-		about?: string | undefined
-		phone?: string | undefined
-	}> = ({ item }) => (
+	const renderItem: ListRenderItem<Profile> = ({ item }) => (
 		<Box p="2" width="full" mb={2}>
 			<Pressable
 				onPress={() => {
