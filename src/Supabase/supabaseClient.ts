@@ -1,4 +1,3 @@
-import { definitions, paths } from './../Interface/generated-types';
 // @ts-ignore
 import { SUPABASE_URL, SUPABASE_PUBLIC_KEY } from '@env';
 import { createClient } from '@supabase/supabase-js';

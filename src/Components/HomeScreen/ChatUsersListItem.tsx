@@ -52,7 +52,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 					<HStack space="4" alignItems={"center"}>
 						<Avatar
 							source={{
-								uri: user.avatar_url
+								uri: user.avatar_url !== "" ? user.avatar_url : undefined
 							}}
 							height="10"
 							width="10"
@@ -104,7 +104,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 				<HStack space="4" alignItems={"center"}>
 					<Avatar
 						source={{
-							uri: user.avatar_url
+							uri: user.avatar_url !== "" ? user.avatar_url : undefined
 						}}
 						height="10"
 						width="10"

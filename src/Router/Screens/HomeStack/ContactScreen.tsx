@@ -88,7 +88,7 @@ const ContactScreen = () => {
 				<HStack space="4" alignItems={"center"}>
 					<Avatar
 						source={{
-							uri: item.avatar_url
+							uri: item.avatar_url !== "" ? item.avatar_url : undefined
 						}}
 						height="10"
 						width="10"

@@ -68,21 +68,23 @@ const ProfileUserScreen = () => {
 	}
 
 	const blockUser = async () => {
-		const update: UserHasBlockedData = {
-			blocking_user_id: session?.user.id,
+		const update = {
+			blocking_user_id: session?.user.id!,
 			blocked_user_id: profile.id,
-			created_at: new Date()
+			created_at: new Date().toISOString()
 		}
 		try {
 			const createBlockRelation = await createUserBlock(update)
 			// Add store
-			addBlockedUser(createBlockRelation)
-			toast.show({
-				description: `${profile.username} has been blocked !`,
-				color: "green.500",
-				placement: "top"
-			})
-			closeModal()
+			if (createBlockRelation !== undefined) {
+				addBlockedUser(createBlockRelation)
+				toast.show({
+					description: `${profile.username} has been blocked !`,
+					color: "green.500",
+					placement: "top"
+				})
+				closeModal()
+			}
 		} catch (error) {
 			toast.show({
 				description: "User couldn't be blocked. Restart later."
@@ -152,7 +154,7 @@ const ProfileUserScreen = () => {
 						<Center pt="4">
 							<Avatar
 								source={{
-									uri: profile?.avatar_url
+									uri: profile.avatar_url !== "" ? profile.avatar_url : undefined
 								}}
 								bg={darktheme.accentColor}
 								size={"2xl"}>

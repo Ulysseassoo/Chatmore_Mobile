@@ -48,7 +48,7 @@ const ChatConversationHeader = () => {
 					<HStack alignItems={"center"} space="4" flex="1">
 						<Avatar
 							source={{
-								uri: userToChat?.avatar_url
+								uri: userToChat?.avatar_url !== "" ? userToChat.avatar_url : undefined
 							}}
 							bg={darktheme.accentColor}
 							size={"sm"}>

@@ -29,22 +29,25 @@ const ProfilePictureInput = () => {
 			}
 
 			const avatar_url = imageData?.path
-			if (avatar_url !== undefined) {
+			if (avatar_url !== undefined && profile !== null) {
 				const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(avatar_url)
 				const updates = {
-					id: profile?.id,
+					id: profile.id,
 					avatar_url: urlData.publicUrl,
-					updated_at: new Date()
+					updated_at: new Date().toISOString(),
+					username: profile.username
 				}
 				// Get updated profile back
 				let { error: newError, data: newData } = await supabase.from("profiles").upsert(updates).select().single()
 				if (newError) throw Error
-				await setProfile(newData)
-				setIsLoadingPicture(false)
-				toast.show({
-					description: "Your profile picture has been updated !",
-					colorScheme: "success"
-				})
+				if (newData !== null) {
+					await setProfile(newData)
+					setIsLoadingPicture(false)
+					toast.show({
+						description: "Your profile picture has been updated !",
+						colorScheme: "success"
+					})
+				}
 			}
 		} catch (error: any) {
 			toast.show({
@@ -67,7 +70,10 @@ const ProfilePictureInput = () => {
 			changeImage(result)
 			onClose()
 		} else {
-			alert("You did not select any image.")
+			toast.show({
+				description: "You did not select any image.",
+				color: "red.500"
+			})
 		}
 	}
 
