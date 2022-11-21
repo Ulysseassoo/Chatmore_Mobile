@@ -43,6 +43,7 @@ export interface Database {
           user: string | null
           view: boolean
           content: string
+          isBlocked: boolean
         }
         Insert: {
           id?: number
@@ -51,6 +52,7 @@ export interface Database {
           user?: string | null
           view?: boolean
           content: string
+          isBlocked?: boolean
         }
         Update: {
           id?: number
@@ -59,6 +61,7 @@ export interface Database {
           user?: string | null
           view?: boolean
           content?: string
+          isBlocked?: boolean
         }
       }
       profiles: {
@@ -104,24 +107,24 @@ export interface Database {
           created_at?: string | null
         }
       }
-      userHasBlocked: {
+      userHasBlockedRoom: {
         Row: {
           id: number
           created_at: string | null
           blocking_user_id: string
-          blocked_user_id: string
+          room_id: number
         }
         Insert: {
           id?: number
           created_at?: string | null
           blocking_user_id: string
-          blocked_user_id: string
+          room_id: number
         }
         Update: {
           id?: number
           created_at?: string | null
           blocking_user_id?: string
-          blocked_user_id?: string
+          room_id?: number
         }
       }
       userHasRoom: {

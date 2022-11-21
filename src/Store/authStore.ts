@@ -8,22 +8,18 @@ type State =  {
     isLoggedIn: boolean
     session: Session | null
     profile: Profile | null
-    blockedUsers: UserHasBlocked[] | null
 }
 
 type Actions = {
   setLoggedIn: (session: Session) => void
   setLoggedOut: () => void;
   setProfile: (profile: Profile) => void;
-  addBlockedUser: (userToBlock: UserHasBlocked) => void;
-  deleteBlockedUser: (blocked_user_id: string) => void;
 };
 
 const initialState: State = {
 	session: null,
 	isLoggedIn: false,
   profile: null,
-  blockedUsers: []
 }
 
 const useAuthStore = create(
@@ -36,21 +32,10 @@ const useAuthStore = create(
           state.session = session;
           state.profile = data;
           state.isLoggedIn = true;
-          state.blockedUsers = blockedUsers
         })
       },
       setProfile: async (profile) => set((state) => {
         state.profile = profile
-      }),
-      addBlockedUser: (userToBlock) => set((state) => {
-        if(state.blockedUsers !== null) {
-          state.blockedUsers = [...state.blockedUsers, userToBlock]
-        }
-      }),
-      deleteBlockedUser: (blocked_user_id) => set((state) => {
-        if(state.blockedUsers !== null) {
-          state.blockedUsers = state.blockedUsers.filter((user) => blocked_user_id !== user.blocked_user_id)
-        }
       }),
     setLoggedOut: () =>
         set((state) => {

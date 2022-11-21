@@ -13,5 +13,6 @@ export type RootStackParamList = {
     DiscussionsParams: undefined
 	ProfileUser: {
 		profile: Profile
+        room_id: number
 	}
 }

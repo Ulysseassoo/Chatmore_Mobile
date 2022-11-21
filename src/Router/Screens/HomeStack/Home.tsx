@@ -12,6 +12,8 @@ const Home = () => {
 	const setRoomUsers = useOnlineStore((state) => state.setTypyingUsers)
 	const rooms = useRoomStore((state) => state.rooms)
 	const addMessageToRoom = useRoomStore((state) => state.addMessageToRoom)
+	const addBlockedUser = useRoomStore((state) => state.addBlockedUser)
+	const deleteBlockedUser = useRoomStore((state) => state.deleteBlockedUser)
 	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
 	const isLoading = useRoomStore((state) => state.isLoading)
 
@@ -26,6 +28,12 @@ const Home = () => {
 				channel
 					.on("broadcast", { event: "message" }, (payload) => {
 						addMessageToRoom(payload.payload.message)
+					})
+					.on("broadcast", { event: "deleteBlock" }, (payload) => {
+						deleteBlockedUser(payload.payload.room_id, payload.payload.profile_id)
+					})
+					.on("broadcast", { event: "addBlock" }, (payload) => {
+						addBlockedUser(payload.payload.userBlock)
 					})
 					.on("presence", { event: "sync" }, () => setRoomUsers({ ...channel.presenceState() }, room.room.toString()))
 					.on("broadcast", { event: "readMessages" }, (payload) => updateViewRoomMessages(payload.payload.messages, session?.user.id))

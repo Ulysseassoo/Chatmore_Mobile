@@ -1,16 +1,14 @@
-import { Box, Center, Flex, FormControl, HStack, Icon, Input, Pressable, useToast } from "native-base"
-import React, { useCallback, useEffect, useMemo } from "react"
+import { Center, FormControl, HStack, Icon, Input, Pressable, useToast } from "native-base"
+import React, { useMemo } from "react"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { Controller, useForm } from "react-hook-form"
 import useRoomStore from "../../../Store/roomStore"
 import { RouteProps } from "./ChatConversationHeader"
 import { useRoute } from "@react-navigation/core"
-import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import { createMessage } from "../../../Api/API"
 import { supabase } from "../../../Supabase/supabaseClient"
-import useOnlineStore from "../../../Store/onlineStore"
 import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 
 interface FormData {
@@ -32,7 +30,7 @@ const ChatConversationBottom = () => {
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const channels = supabase.getChannels()
 	const addMessageToRoom = useRoomStore((state) => state.addMessageToRoom)
-	const isUserBlocked = useIsUserBlocked(actualRoom?.users[0]?.id)
+	const isUserBlocked = useIsUserBlocked(actualRoom?.room)
 	const getChannelRoom = useMemo(() => {
 		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + actualRoom?.room.toString()!)
 		if (channelRoom) return channelRoom
@@ -46,13 +44,14 @@ const ChatConversationBottom = () => {
 			created_at: new Date().toISOString(),
 			content,
 			room: actualRoom?.room,
-			user: session?.user.id
+			user: session?.user.id,
+			isBlocked: isUserBlocked.isRoomBlocked
 		}
 		try {
 			if (content === "") throw new Error("You need to write something :)")
 			const message = await createMessage(newMessage)
 			addMessageToRoom(message)
-			if (getChannelRoom !== null) {
+			if (getChannelRoom !== null && !!message?.isBlocked === false) {
 				getChannelRoom.send({
 					type: "broadcast",
 
@@ -109,7 +108,7 @@ const ChatConversationBottom = () => {
 								fontSize={"md"}
 								onChangeText={onChange}
 								onKeyPress={() => {
-									if (getChannelRoom !== null && actualRoom !== undefined) {
+									if (getChannelRoom !== null && actualRoom !== undefined && !isUserBlocked.isRoomBlocked) {
 										getChannelRoom.track({ isTyping: Date.now(), room: actualRoom.room })
 									}
 								}}
@@ -126,14 +125,7 @@ const ChatConversationBottom = () => {
 					}}
 				/>
 
-				<Pressable
-					isDisabled={isUserBlocked}
-					p="4"
-					height="10"
-					width="10"
-					borderRadius={"full"}
-					bg={darktheme.accentColor}
-					_disabled={{ bg: darktheme.accentColorHover }}>
+				<Pressable p="4" height="10" width="10" borderRadius={"full"} bg={darktheme.accentColor}>
 					<Center height="full" width="full">
 						<Pressable onPress={handleSubmit(onSubmit)}>
 							<Icon as={MaterialCommunityIcons} name="send" color="white" size={6} />

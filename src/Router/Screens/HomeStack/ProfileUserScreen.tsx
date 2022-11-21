@@ -1,31 +1,18 @@
 import { useRoute } from "@react-navigation/core"
-import {
-	Avatar,
-	Box,
-	Button,
-	Center,
-	Flex,
-	FormControl,
-	HStack,
-	Icon,
-	Input,
-	Modal,
-	Pressable,
-	ScrollView,
-	Text,
-	useToast,
-	VStack
-} from "native-base"
-import React, { useState } from "react"
+import { Avatar, Box, Button, Center, Flex, HStack, Icon, Modal, Pressable, Text, useToast, VStack } from "native-base"
+import React, { useMemo, useState } from "react"
 import { Profile } from "../../../Interface/Types"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialIcons } from "@expo/vector-icons"
 import useAuthStore from "../../../Store/authStore"
-import { createUserBlock, deleteUserBlock, UserHasBlockedData, UserHasBlockedDelete } from "../../../Api/API"
+import { createUserBlock, deleteUserBlock, UserHasBlockedDelete } from "../../../Api/API"
 import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
+import useRoomStore from "../../../Store/roomStore"
+import { supabase } from "../../../Supabase/supabaseClient"
 
 interface Params {
 	profile: Profile
+	room_id: number
 }
 
 export interface RouteProps {
@@ -37,26 +24,41 @@ export interface RouteProps {
 
 const ProfileUserScreen = () => {
 	const { params } = useRoute<RouteProps>()
-	const { profile } = params
+	const { profile, room_id } = params
 	const toast = useToast()
 	const session = useAuthStore((state) => state.session)
-	const deleteBlockedUser = useAuthStore((state) => state.deleteBlockedUser)
-	const addBlockedUser = useAuthStore((state) => state.addBlockedUser)
 	const [showModal, setShowModal] = useState(false)
-	const isUserBlocked = useIsUserBlocked(profile.id)
+	const deleteBlockedUser = useRoomStore((state) => state.deleteBlockedUser)
+	const addBlockedUser = useRoomStore((state) => state.addBlockedUser)
+	const isUserBlocked = useIsUserBlocked(room_id)
+	const channels = supabase.getChannels()
+	const getChannelRoom = useMemo(() => {
+		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + room_id.toString())
+		if (channelRoom) return channelRoom
+		return null
+	}, [channels])
 
 	const closeModal = () => setShowModal(false)
 
 	const unblockUser = async () => {
 		const deleteUsers: UserHasBlockedDelete = {
 			blocking_user_id: session?.user.id,
-			blocked_user_id: profile.id
+			room_id
 		}
 
 		try {
 			await deleteUserBlock(deleteUsers)
 			// Delete store
-			deleteBlockedUser(profile.id)
+			deleteBlockedUser(room_id, profile.id)
+			if (getChannelRoom !== null) {
+				getChannelRoom.send({
+					type: "broadcast",
+
+					event: "deleteBlock",
+
+					payload: { room_id, profile_id: profile.id }
+				})
+			}
 			toast.show({
 				description: `${profile.username} has been unblocked !`,
 				bg: "green.500",
@@ -70,14 +72,23 @@ const ProfileUserScreen = () => {
 	const blockUser = async () => {
 		const update = {
 			blocking_user_id: session?.user.id!,
-			blocked_user_id: profile.id,
-			created_at: new Date().toISOString()
+			created_at: new Date().toISOString(),
+			room_id
 		}
 		try {
 			const createBlockRelation = await createUserBlock(update)
 			// Add store
 			if (createBlockRelation !== undefined) {
 				addBlockedUser(createBlockRelation)
+				if (getChannelRoom !== null) {
+					getChannelRoom.send({
+						type: "broadcast",
+
+						event: "addBlock",
+
+						payload: { userBlock: createBlockRelation }
+					})
+				}
 				toast.show({
 					description: `${profile.username} has been blocked !`,
 					color: "green.500",
@@ -93,7 +104,7 @@ const ProfileUserScreen = () => {
 	}
 
 	const blockButton = () => {
-		if (isUserBlocked) {
+		if (isUserBlocked.hasConnectedUserBlockedRoom) {
 			return (
 				<Pressable
 					bg={darktheme.headerMenuColor}

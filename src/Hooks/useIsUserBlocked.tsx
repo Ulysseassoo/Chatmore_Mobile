@@ -1,10 +1,20 @@
 import React from "react"
 import useAuthStore from "../Store/authStore"
+import useRoomStore from "../Store/roomStore"
+import { supabase } from "../Supabase/supabaseClient"
 
-const useIsUserBlocked = (user_id: string | undefined) => {
-	const blockedUsers = useAuthStore((state) => state.blockedUsers)
-	const isUserBlocked = !!blockedUsers?.find((user) => user.blocked_user_id === user_id)
-	return isUserBlocked
+const useIsUserBlocked = (roomId: number | undefined) => {
+	const rooms = useRoomStore((state) => state.rooms)
+	const actualRoom = rooms.find((room) => room.room === roomId)
+	const profile = useAuthStore((state) => state.profile)
+
+	const isRoomBlocked = !!actualRoom?.blockedUsers.find((room) => room.room_id === roomId)
+	const hasConnectedUserBlockedRoom = !!actualRoom?.blockedUsers.find((room) => room.room_id === roomId && room.blocking_user_id === profile?.id)
+
+	return {
+		isRoomBlocked,
+		hasConnectedUserBlockedRoom
+	}
 }
 
 export default useIsUserBlocked

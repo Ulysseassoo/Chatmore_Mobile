@@ -2,14 +2,15 @@ import create from 'zustand'
 import { SessionState } from "../Interface/StoreState"
 import { immer } from "zustand/middleware/immer";
 import { Session, User } from "@supabase/supabase-js";
-import { Message, Profile, Room } from "../Interface/Types";
-import { getUserRooms, getRoom, getRoomMessages } from "../Api/API";
+import { Message, Profile, Room, UserHasBlockedRoom } from "../Interface/Types";
+import { getUserRooms, getRoom, getRoomMessages, getRoomBlockUsers } from "../Api/API";
 import useAuthStore from "./authStore";
 export interface RoomState {
 	room: number
 	users: Profile[]
 	messages: Message[]
 	index?: number
+    blockedUsers: UserHasBlockedRoom[]
 }
 
 type State =  {
@@ -23,6 +24,8 @@ type Actions = {
     addMessageToRoom: (message: Message | undefined) => void;
     emptyRooms: () => void;
     updateViewRoomMessages: (messages: Message[], connectedUserId: string | undefined) => void;
+    deleteBlockedUser: ( roomId: number, profileId: string | undefined) => void;
+    addBlockedUser: (blockUser: UserHasBlockedRoom) => void;
 };
 
 const initialState: State = {
@@ -49,10 +52,12 @@ const getUserChatRooms = async (user: User) => {
     for (let i = 0; i < data.length; i++) {
         const roomData: any = await getRoom(data[i].room)
         const roomMessages: any = await getRoomMessages(data[i].room)
+        const roomBlockUsers: any = await getRoomBlockUsers(data[i].room)
         const roomNew: RoomState = {
             room: 0,
             users: [],
             messages: [],
+            blockedUsers: [],
             index: i
         }
         roomData.forEach((room: RoomInnerJoinData) => {
@@ -60,6 +65,7 @@ const getUserChatRooms = async (user: User) => {
             if (room.user.id !== user.id) roomNew.users.push(room.user)
         })
         roomNew.messages = roomMessages.reverse()
+        roomNew.blockedUsers = roomBlockUsers
         newRooms.rooms.push(roomNew)
     }
 
@@ -102,6 +108,20 @@ const useRoomStore = create(
     emptyRooms: () => set((state) => {
         state.rooms = initialState.rooms
         state.isLoading = initialState.isLoading
+    }),
+    deleteBlockedUser: (roomId, profileId) => set((state) => {
+        const roomIndex = state.rooms.findIndex((room) => room.room === roomId)
+        if(roomIndex !== -1) {
+            const room = {...state.rooms[roomIndex]}
+            const updateBlockedUsers = room.blockedUsers.filter((userRoom) => userRoom.blocking_user_id !== profileId && userRoom.room_id !== roomId)
+            state.rooms[roomIndex].blockedUsers = updateBlockedUsers
+        }
+    }),
+    addBlockedUser: (blockUser) => set((state) => {
+        const roomIndex = state.rooms.findIndex((room) => room.room === blockUser.room_id)
+        if(roomIndex !== -1) {
+            state.rooms[roomIndex].blockedUsers.push(blockUser)
+        }
     })
         
     })),

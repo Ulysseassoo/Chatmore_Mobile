@@ -19,7 +19,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 	const navigation = useNavigation()
 	const session = useAuthStore((state) => state.session)
 	const actualMessage = useMemo(() => item.messages[0], [item.messages])
-	const isUserBlocked = useIsUserBlocked(user.id)
+	const isUserBlocked = useIsUserBlocked(item.room)
 
 	const dimensions = Dimensions.get("screen")
 	const goToUserRoom = (roomId: number) => {
@@ -38,7 +38,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 		return count.length
 	}
 
-	if (isUserBlocked) {
+	if (isUserBlocked.hasConnectedUserBlockedRoom) {
 		return (
 			<Box width={dimensions.width} position="relative">
 				<Pressable
@@ -69,9 +69,6 @@ const ChatUsersListItem = ({ item }: Props) => {
 							</Flex>
 							<Flex justifyContent={"space-between"} flexDir="row">
 								<HStack alignItems="center" space="1">
-									{isFromConnectedUser && (
-										<Icon as={Ionicons} name="checkmark-done-sharp" color={actualMessage.view ? darktheme.accentColor : "gray.500"} />
-									)}
 									<Text
 										color={isUserTypying ? darktheme.accentColor : "gray.400"}
 										ellipsizeMode="tail"

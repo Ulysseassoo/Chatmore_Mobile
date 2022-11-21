@@ -27,7 +27,7 @@ const ChatConversationHeader = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)
 	const userToChat = actualRoom?.users[0]
-	const isUserBlocked = useIsUserBlocked(userToChat?.id)
+	const isUserBlocked = useIsUserBlocked(route.params.room_id)
 	const userIsTypying = useUserIsTypying(route.params.room_id)
 	const onlineUsers = useOnlineStore((state) => state.onlineUsers)
 	const isUserOnline = useMemo(() => {
@@ -62,14 +62,15 @@ const ChatConversationHeader = () => {
 							borderRadius={"md"}
 							onPress={() =>
 								navigation.navigate("ProfileUser", {
-									profile: userToChat
+									profile: userToChat,
+									room_id: route.params.room_id
 								})
 							}
 							flex="1">
 							<Text color="white" fontSize="lg" fontWeight="bold">
 								{userToChat?.username}
 							</Text>
-							{!isUserBlocked && !userIsTypying && (
+							{!isUserBlocked.isRoomBlocked && !userIsTypying && (
 								<HStack space="1" alignItems={"center"}>
 									<Box height="2" width="2" borderRadius={"full"} bg={isUserOnline ? "green.500" : "red.500"} />
 									<Text fontSize={"xs"} color="white">
@@ -77,7 +78,7 @@ const ChatConversationHeader = () => {
 									</Text>
 								</HStack>
 							)}
-							{!isUserBlocked && userIsTypying && (
+							{!isUserBlocked.isRoomBlocked && userIsTypying && (
 								<Text color="white" fontSize={"xs"}>
 									Is writing...
 								</Text>

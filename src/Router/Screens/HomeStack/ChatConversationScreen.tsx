@@ -1,8 +1,9 @@
 import { useRoute } from "@react-navigation/core"
-import { Box, Center, FlatList, Flex, Pressable, Text, View } from "native-base"
+import { profile } from "console"
+import { Box, Center, FlatList, Flex, Pressable, Text, useToast, View } from "native-base"
 import React, { useEffect, useMemo } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { updateRoomMessages } from "../../../Api/API"
+import { deleteUserBlock, updateRoomMessages, UserHasBlockedDelete } from "../../../Api/API"
 import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
@@ -17,16 +18,48 @@ const ChatConversationScreen = () => {
 	const insets = useSafeAreaInsets()
 	const route = useRoute<RouteProps>()
 	const rooms = useRoomStore((state) => state.rooms)
+	const deleteBlockedUser = useRoomStore((state) => state.deleteBlockedUser)
 	const actualRoom = rooms.find((roomState) => roomState.room === route.params?.room_id)!
 	const session = useAuthStore((state) => state.session)
+	const profile = useAuthStore((state) => state.profile)
 	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
 	const channels = supabase.getChannels()
-	const isUserBlocked = useIsUserBlocked(actualRoom.users[0]?.id)
+	const isUserBlocked = useIsUserBlocked(actualRoom.room)
+	const toast = useToast()
 	const getChannelRoom = useMemo(() => {
 		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + actualRoom?.room.toString()!)
 		if (channelRoom) return channelRoom
 		return null
 	}, [channels])
+
+	const unblockUser = async () => {
+		const deleteUsers: UserHasBlockedDelete = {
+			blocking_user_id: session?.user.id,
+			room_id: route.params.room_id
+		}
+
+		try {
+			await deleteUserBlock(deleteUsers)
+			// Delete store
+			deleteBlockedUser(route.params.room_id, profile?.id)
+			if (getChannelRoom !== null) {
+				getChannelRoom.send({
+					type: "broadcast",
+
+					event: "deleteBlock",
+
+					payload: { room_id: route.params.room_id, profile_id: profile?.id }
+				})
+			}
+			toast.show({
+				description: `${profile?.username} has been unblocked !`,
+				bg: "green.500",
+				placement: "top"
+			})
+		} catch (error: any) {
+			console.log(error)
+		}
+	}
 
 	const getNotViewedMessages = () => {
 		const count = actualRoom.messages
@@ -59,7 +92,7 @@ const ChatConversationScreen = () => {
 		try {
 			const viewedMessages = setViewedMessage()
 			if (viewedMessages.length === 0) return
-			const messages: Message[] = await updateRoomMessages(viewedMessages)
+			const messages = await updateRoomMessages(viewedMessages)
 			return messages
 		} catch (error) {
 			console.log(error)
@@ -100,7 +133,7 @@ const ChatConversationScreen = () => {
 					renderItem={({ item }) => <ChatMessage item={item} />}
 					data={actualRoom?.messages}
 				/>
-				{isUserBlocked && (
+				{isUserBlocked.hasConnectedUserBlockedRoom && (
 					<Center>
 						<Pressable
 							_pressed={{
@@ -109,6 +142,7 @@ const ChatConversationScreen = () => {
 							textAlign={"center"}
 							my="2.5"
 							shadow="6"
+							onPress={unblockUser}
 							py="2"
 							px="4"
 							bg={darktheme.headerMenuColor}

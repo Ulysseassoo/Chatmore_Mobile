@@ -28,6 +28,7 @@ type HomeStackParamList = {
 	DiscussionsParams: undefined
 	ProfileUser: {
 		profile: Profile
+		room_id: number
 	}
 }
 
