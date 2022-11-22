@@ -7,9 +7,11 @@ import useRoomStore from "../../../Store/roomStore"
 import { RouteProps } from "./ChatConversationHeader"
 import { useRoute } from "@react-navigation/core"
 import useAuthStore from "../../../Store/authStore"
-import { createMessage } from "../../../Api/API"
+import { createImageMessage, createMessage } from "../../../Api/API"
 import { supabase } from "../../../Supabase/supabaseClient"
 import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
+import * as ImagePicker from "expo-image-picker"
+import { decode } from "base64-arraybuffer"
 
 interface FormData {
 	message: string
@@ -72,6 +74,84 @@ const ChatConversationBottom = () => {
 		}
 	}
 
+	const sendImage = async (image: ImagePicker.ImageInfo) => {
+		const file = image
+		const fileExt = file.uri.split(".").pop()
+		const fileName = `${Math.random()}.${fileExt}`
+		const filePath = `${fileName}`
+
+		const newMessage = {
+			created_at: new Date().toISOString(),
+			content: "",
+			room: route.params.room_id,
+			user: session?.user.id
+		}
+
+		console.log(fileExt)
+
+		try {
+			if (fileExt !== ("png" && "jpeg")) throw Error("You need to upload a correct image(PNG, JPEG)!")
+			let { error: uploadError, data: imageData } = await supabase.storage.from("users-images").upload(filePath, decode(file.base64!), {
+				contentType: `image/${fileExt}`
+			})
+
+			if (uploadError) {
+				throw uploadError
+			}
+
+			const message = await createMessage(newMessage)
+			if (message !== undefined) {
+				const imageUrl = imageData?.path
+				const newImage = {
+					created_at: new Date().toISOString(),
+					message_id: message.id,
+					message_room_id: route.params.room_id,
+					message_user_id: session?.user.id,
+					url: imageUrl!
+				}
+				const image = await createImageMessage(newImage)
+
+				if (getChannelRoom !== null) {
+					getChannelRoom.send({
+						type: "broadcast",
+
+						event: "message",
+
+						payload: {
+							message: {
+								...message,
+								images: [image]
+							}
+						}
+					})
+				}
+			}
+		} catch (error: any) {
+			toast.show({
+				description: error.error_description || error.message,
+				colorScheme: "danger"
+			})
+		}
+	}
+
+	// Get image from user gallery
+	const pickImageAsync = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			allowsEditing: true,
+			quality: 1,
+			base64: true
+		})
+
+		if (!result.cancelled) {
+			sendImage(result)
+		} else {
+			toast.show({
+				description: "You did not select any image.",
+				color: "red.500"
+			})
+		}
+	}
+
 	return (
 		<FormControl>
 			<HStack width="full" height="10" borderRadius="full" position="relative" flexDir={"row"} space="2">
@@ -116,7 +196,14 @@ const ChatConversationBottom = () => {
 								onBlur={blur}
 								defaultValue={""}
 								InputRightElement={
-									<Pressable px="4">
+									<Pressable
+										px="2"
+										py="2"
+										borderRadius={"full"}
+										onPress={pickImageAsync}
+										_pressed={{
+											bg: darktheme.lineBreakColor
+										}}>
 										<Icon as={MaterialCommunityIcons} name="image" color="gray.500" size={6} />
 									</Pressable>
 								}

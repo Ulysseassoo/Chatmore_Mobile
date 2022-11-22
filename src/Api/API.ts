@@ -1,4 +1,4 @@
-import { Message, UserHasBlockedRoom } from "../Interface/Types";
+import { Image, Message, UserHasBlockedRoom } from "../Interface/Types";
 import { supabase } from "../Supabase/supabaseClient";
 
 export interface UserHasBlockedData {
@@ -112,5 +112,21 @@ export const deleteUserBlock = async (usersDelete: UserHasBlockedDelete) => {
 		return data
 	} catch (error: any) {
 		console.log(error)
+	}
+}
+
+export const createImageMessage = async (imageData: {
+    created_at: string | null;
+    url: string | null;
+    message_id: number | null;
+    message_room_id: number | null | undefined;
+    message_user_id: string | null | undefined;
+}) => {
+	try {
+		const { data, error } = await supabase.from("images").insert(imageData).select().single()
+		if (error) throw error
+		return data
+	} catch (error: any) {
+		return error
 	}
 }

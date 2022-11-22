@@ -2,7 +2,7 @@ import create from 'zustand'
 import { SessionState } from "../Interface/StoreState"
 import { immer } from "zustand/middleware/immer";
 import { Session, User } from "@supabase/supabase-js";
-import { Message, Profile, Room, UserHasBlockedRoom } from "../Interface/Types";
+import { Image, Message, Profile, Room, UserHasBlockedRoom } from "../Interface/Types";
 import { getUserRooms, getRoom, getRoomMessages, getRoomBlockUsers } from "../Api/API";
 import useAuthStore from "./authStore";
 export interface RoomState {

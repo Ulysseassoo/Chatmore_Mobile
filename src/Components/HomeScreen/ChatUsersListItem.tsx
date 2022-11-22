@@ -9,6 +9,7 @@ import useAuthStore from "../../Store/authStore"
 import useUserIsTypying from "../../Hooks/useUserIsTypying"
 import { dateFormatted } from "../../Router/Screens/HomeStack/ChatMessage"
 import useIsUserBlocked from "../../Hooks/useIsUserBlocked"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 
 interface Props {
 	item: RoomState
@@ -137,6 +138,12 @@ const ChatUsersListItem = ({ item }: Props) => {
 									alignItems="center">
 									{isUserTypying ? "Is writing..." : actualMessage.content}
 								</Text>
+								{actualMessage.images !== undefined && actualMessage.images.length > 0 && (
+									<HStack alignItems="center" space="1">
+										<Icon as={MaterialCommunityIcons} name="image" color="gray.500" size={4} />
+										<Text color={isUserTypying ? darktheme.accentColor : "gray.400"}>Image</Text>
+									</HStack>
+								)}
 							</HStack>
 							{getNotViewedMessages(session?.user.id) > 0 && (
 								<Badge bg={darktheme.accentColor} color="white" fontSize={"2xs"} borderRadius={"full"}>

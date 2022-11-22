@@ -1,13 +1,16 @@
-import { Actionsheet, Box, Center, Flex, HStack, Icon, Pressable, Text, useDisclose, useToast } from "native-base"
-import React, { useMemo } from "react"
+import { Actionsheet, Box, Center, Flex, HStack, Icon, Image as ImageComponent, Pressable, Text, useDisclose, useToast } from "native-base"
+import React, { useEffect, useMemo } from "react"
 import { deleteMessageById } from "../../../Api/API"
-import { Message } from "../../../Interface/Types"
+import { Message, Image } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialIcons } from "@expo/vector-icons"
+import { supabase } from "../../../Supabase/supabaseClient"
 
 interface Props {
-	item: Message
+	item: Message & {
+		images: Image[]
+	}
 }
 
 export const dateFormatted = (created_at: string) => {
@@ -25,12 +28,43 @@ export const dateFormatted = (created_at: string) => {
 
 const ChatMessage = ({ item }: Props) => {
 	const session = useAuthStore((state) => state.session)
+	const [imageSrc, setImageSrc] = React.useState<string | ArrayBuffer | null>("")
 	const { isOpen, onOpen, onClose } = useDisclose()
 	const toast = useToast()
+
+	useEffect(() => {
+		if (item.images?.length > 0) {
+			getImageSource(item.images[0].url)
+		}
+	}, [item.images])
 
 	const isFromConnectedUser = useMemo(() => {
 		return item.user === session?.user.id
 	}, [])
+
+	const getImageSource = async (source: string | null) => {
+		if (source === null) throw Error
+		try {
+			const { data, error } = await supabase.storage.from("users-images").download(source)
+			if (error) {
+				throw error
+			}
+			if (data !== null) {
+				const fileReaderInstance = new FileReader()
+				fileReaderInstance.readAsDataURL(data)
+				fileReaderInstance.onload = () => {
+					const base64data = fileReaderInstance.result
+					setImageSrc(base64data)
+				}
+			}
+		} catch (error: any) {
+			toast.show({
+				description: error.message || "Error downloading image: ",
+				color: "red.500",
+				placement: "top"
+			})
+		}
+	}
 
 	const deleteMessage = async (id: number) => {
 		try {
@@ -46,6 +80,57 @@ const ChatMessage = ({ item }: Props) => {
 				colorScheme: "danger"
 			})
 		}
+	}
+
+	const showMessageContent = () => {
+		if (item?.images !== undefined && item.images.length > 0) {
+			return (
+				<HStack
+					height="250"
+					width="250"
+					position="relative"
+					space="4"
+					alignItems="flex-end"
+					justifyContent={"space-between"}
+					borderRadius="md"
+					flexDir="row"
+					flexWrap="wrap">
+					{imageSrc !== "" && imageSrc !== null && (
+						<ImageComponent
+							// @ts-ignore
+							source={{
+								uri: imageSrc
+							}}
+							height="250"
+							width="250"
+							borderRadius="md"
+							alt="image"
+							position="absolute"
+							top="0"
+							left="0"
+							right="0"
+						/>
+					)}
+					<Text color="white">{item.content}</Text>
+					{item.created_at && (
+						<Text color={"white"} fontSize="2xs" position="absolute" bottom="0" right="1">
+							{dateFormatted(item.created_at)}
+						</Text>
+					)}
+				</HStack>
+			)
+		}
+
+		return (
+			<HStack position="relative" space="4" alignItems="flex-end" justifyContent={"space-between"} flexDir="row" flexWrap="wrap">
+				<Text color="white">{item.content}</Text>
+				{item.created_at && (
+					<Text color={"white"} fontSize="2xs">
+						{dateFormatted(item.created_at)}
+					</Text>
+				)}
+			</HStack>
+		)
 	}
 
 	return (
@@ -66,14 +151,7 @@ const ChatMessage = ({ item }: Props) => {
 					}
 				}}
 				alignSelf={isFromConnectedUser ? "flex-end" : "flex-start"}>
-				<HStack space="4" alignItems="flex-end" justifyContent={"space-between"} flexDir="row" flexWrap="wrap">
-					<Text color="white">{item.content}</Text>
-					{item.created_at && (
-						<Text color={"white"} fontSize="2xs">
-							{dateFormatted(item.created_at)}
-						</Text>
-					)}
-				</HStack>
+				{showMessageContent()}
 			</Pressable>
 
 			<Actionsheet isOpen={isOpen} onClose={onClose}>
