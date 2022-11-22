@@ -85,7 +85,7 @@ const HomeStackScreens = () => {
 					headerStyle: {
 						backgroundColor: darktheme.headerMenuColor
 					},
-					headerBackground: () => <Box borderBottomColor={"none"} />,
+					// headerBackground: () => <Box bg={darktheme.headerMenuColor} borderBottomColor={"none"} p="0" m="0" />,
 					headerTintColor: darktheme.textColor,
 					headerRight: () => (
 						<HStack space="4" alignItems="center">
@@ -121,8 +121,8 @@ const HomeStackScreens = () => {
 					headerStyle: {
 						backgroundColor: darktheme.headerMenuColor
 					},
-					headerBackground: () => <Box borderBottomColor={"none"} />,
-					headerTintColor: "white"
+					headerTintColor: "white",
+					headerBackTitle: ""
 				}}
 			/>
 
@@ -134,8 +134,8 @@ const HomeStackScreens = () => {
 					headerStyle: {
 						backgroundColor: darktheme.headerMenuColor
 					},
-					headerBackground: () => <Box borderBottomColor={"none"} />,
-					headerTintColor: "white"
+					headerTintColor: "white",
+					headerBackTitle: ""
 				}}
 			/>
 

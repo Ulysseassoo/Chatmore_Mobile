@@ -24,7 +24,7 @@ const Tab = ({ index, title, key, setIndex, activeIndex }: Props) => {
 				return false
 			}
 			const isOtherUserMessage = !!room.messages.find((message) => {
-				if (message.user !== session?.user) return message.view === false
+				if (message.user !== session?.user.id) return message.view === false
 			})
 			if (isOtherUserMessage) {
 				return true

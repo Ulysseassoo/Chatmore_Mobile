@@ -16,6 +16,7 @@ const ContactScreen = () => {
 	const rooms = useRoomStore((state) => state.rooms)
 	const addRoom = useRoomStore((state) => state.addRoom)
 	const session = useAuthStore((state) => state.session)
+	const profile = useAuthStore((state) => state.profile)
 	const navigation = useNavigation()
 
 	const checkIfUserHasRoom = (newUserId: string) => {
@@ -41,9 +42,31 @@ const ContactScreen = () => {
 		const newRoom: RoomState = {
 			room: roomId,
 			users: [user],
-			messages: []
+			messages: [],
+			blockedUsers: []
 		}
 		return newRoom
+	}
+
+	const sendRoomToUser = (room: RoomState) => {
+		const channelHome = supabase.channel("home" + room.users[0].id, {
+			config: {
+				presence: { key: session?.user.id }
+			}
+		})
+
+		channelHome.subscribe(async (status) => {
+			if (status === "SUBSCRIBED") {
+				console.log(status, "to", channelHome.topic)
+				channelHome.send({
+					type: "broadcast",
+
+					event: "room",
+
+					payload: { room: { ...room, users: [profile] } }
+				})
+			}
+		})
 	}
 
 	const getUserRoom = async (username: string | undefined) => {
@@ -58,6 +81,7 @@ const ContactScreen = () => {
 		}
 		const newRoom = await createRoom(userId, userData)
 		addRoom(newRoom)
+		sendRoomToUser(newRoom)
 		return newRoom
 	}
 

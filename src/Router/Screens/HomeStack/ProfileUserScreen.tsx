@@ -213,7 +213,7 @@ const ProfileUserScreen = () => {
 						</Box>
 					</Box>
 
-					<VStack px="4" space="3.5">
+					<VStack px="4" space="3.5" mb="4">
 						{blockButton()}
 					</VStack>
 				</Flex>
