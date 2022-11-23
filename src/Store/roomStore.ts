@@ -22,6 +22,7 @@ type Actions = {
     getChatrooms: (user: User) => void;
     addRoom: (room: RoomState) => void;
     addMessageToRoom: (message: Message | undefined) => void;
+    removeMessageFromRoom: (message: Message | undefined) => void;
     emptyRooms: () => void;
     updateViewRoomMessages: (messages: Message[], connectedUserId: string | undefined) => void;
     deleteBlockedUser: ( roomId: number, profileId: string | undefined) => void;
@@ -92,6 +93,14 @@ const useRoomStore = create(
             const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
             if(roomIndex !== -1) {
                 state.rooms[roomIndex].messages = [message,...state.rooms[roomIndex].messages]
+            }
+        }
+    }),
+    removeMessageFromRoom: (message) => set((state) => {
+        if(message !== undefined) {
+            const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
+            if(roomIndex !== -1) {
+                state.rooms[roomIndex].messages = state.rooms[roomIndex].messages.filter((mess) => mess.id !== message.id)
             }
         }
     }),

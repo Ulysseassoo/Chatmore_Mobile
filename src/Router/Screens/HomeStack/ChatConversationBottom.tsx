@@ -110,7 +110,11 @@ const ChatConversationBottom = () => {
 					url: imageUrl!
 				}
 				const image = await createImageMessage(newImage)
-
+				const newMessage = {
+					...message,
+					images: [image]
+				}
+				addMessageToRoom(newMessage)
 				if (getChannelRoom !== null) {
 					getChannelRoom.send({
 						type: "broadcast",
@@ -118,10 +122,7 @@ const ChatConversationBottom = () => {
 						event: "message",
 
 						payload: {
-							message: {
-								...message,
-								images: [image]
-							}
+							message: newMessage
 						}
 					})
 				}

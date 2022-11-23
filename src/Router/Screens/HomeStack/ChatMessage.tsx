@@ -1,11 +1,12 @@
 import { Actionsheet, Box, Center, Flex, HStack, Icon, Image as ImageComponent, Pressable, Text, useDisclose, useToast } from "native-base"
 import React, { useEffect, useMemo } from "react"
-import { deleteMessageById } from "../../../Api/API"
+import { deleteImageById, deleteMessageById } from "../../../Api/API"
 import { Message, Image } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialIcons } from "@expo/vector-icons"
 import { supabase } from "../../../Supabase/supabaseClient"
+import useRoomStore from "../../../Store/roomStore"
 
 interface Props {
 	item: Message & {
@@ -30,10 +31,18 @@ const ChatMessage = ({ item }: Props) => {
 	const session = useAuthStore((state) => state.session)
 	const [imageSrc, setImageSrc] = React.useState<string | ArrayBuffer | null>("")
 	const { isOpen, onOpen, onClose } = useDisclose()
+	const removeMessageFromRoom = useRoomStore((state) => state.removeMessageFromRoom)
+	const channels = supabase.getChannels()
+	const getChannelRoom = useMemo(() => {
+		const channelRoom = channels.find((chan) => chan.topic.split(":")[1] === "room" + item.room.toString())
+		if (channelRoom) return channelRoom
+		return null
+	}, [channels])
 	const toast = useToast()
 
 	useEffect(() => {
 		if (item.images?.length > 0) {
+			console.log("yes images")
 			getImageSource(item.images[0].url)
 		}
 	}, [item.images])
@@ -68,7 +77,23 @@ const ChatMessage = ({ item }: Props) => {
 
 	const deleteMessage = async (id: number) => {
 		try {
-			const message = await deleteMessageById(id)
+			if (item.images !== undefined && item.images.length > 0 && item.images[0].url !== null) {
+				// Delete image + bucket
+				const { error } = await supabase.storage.from("users-images").remove([item.images[0].url])
+				if (error) throw error
+				await deleteImageById(item.images[0].id)
+			}
+			await deleteMessageById(id)
+			removeMessageFromRoom(item)
+			if (getChannelRoom !== null) {
+				getChannelRoom.send({
+					type: "broadcast",
+
+					event: "deleteMessage",
+
+					payload: { message: item }
+				})
+			}
 			toast.show({
 				description: "Message deleted !",
 				colorScheme: "green"

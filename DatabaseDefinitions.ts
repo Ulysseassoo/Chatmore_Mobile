@@ -38,27 +38,27 @@ export interface Database {
       message: {
         Row: {
           id: number
-          created_at: string | null
-          room: number | null
-          user: string | null
+          created_at: string
+          room: number
+          user: string
           view: boolean
           content: string
           isBlocked: boolean
         }
         Insert: {
           id?: number
-          created_at?: string | null
-          room?: number | null
-          user?: string | null
+          created_at?: string
+          room?: number
+          user?: string
           view?: boolean
           content: string
           isBlocked?: boolean
         }
         Update: {
           id?: number
-          created_at?: string | null
-          room?: number | null
-          user?: string | null
+          created_at?: string
+          room?: number
+          user?: string
           view?: boolean
           content?: string
           isBlocked?: boolean

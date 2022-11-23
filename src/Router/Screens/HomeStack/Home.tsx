@@ -17,6 +17,7 @@ const Home = () => {
 	const updateViewRoomMessages = useRoomStore((state) => state.updateViewRoomMessages)
 	const isLoading = useRoomStore((state) => state.isLoading)
 	const addRoom = useRoomStore((state) => state.addRoom)
+	const removeMessageFromRoom = useRoomStore((state) => state.removeMessageFromRoom)
 	const channels = supabase.getChannels()
 
 	const subscribeToHome = () => {
@@ -50,6 +51,9 @@ const Home = () => {
 					channel
 						.on("broadcast", { event: "message" }, (payload) => {
 							addMessageToRoom(payload.payload.message)
+						})
+						.on("broadcast", { event: "deleteMessage" }, (payload) => {
+							removeMessageFromRoom(payload.payload.message)
 						})
 						.on("broadcast", { event: "deleteBlock" }, (payload) => {
 							deleteBlockedUser(payload.payload.room_id, payload.payload.profile_id)

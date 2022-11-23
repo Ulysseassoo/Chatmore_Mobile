@@ -59,7 +59,7 @@ export const getRoomBlockUsers = async (room_id: string) => {
 }
 
 export const createMessage = async (messageData :{
-    created_at: string | null;
+    created_at: string;
     room: number | undefined;
     user: string | undefined;
     content: string;
@@ -76,6 +76,15 @@ export const createMessage = async (messageData :{
 export const deleteMessageById = async (messageID: number) => {
 	try {
 		const { error } = await supabase.from("message").delete().match({ id: messageID })
+		if (error) throw Error
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+export const deleteImageById = async (imageId: number) => {
+	try {
+		const { error } = await supabase.from("images").delete().match({ id: imageId })
 		if (error) throw Error
 	} catch (error) {
 		console.log(error)
