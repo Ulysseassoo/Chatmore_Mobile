@@ -89,10 +89,6 @@ const HomeStackScreens = () => {
 					headerTintColor: darktheme.textColor,
 					headerRight: () => (
 						<HStack space="4" alignItems="center">
-							<Pressable onPress={() => console.log("This is a search!")}>
-								<Icon as={AntDesign} name="search1" color={darktheme.textColor} />
-							</Pressable>
-
 							<Menu
 								bg={darktheme.headerMenuColor}
 								w="190"

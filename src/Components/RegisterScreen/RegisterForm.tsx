@@ -26,7 +26,7 @@ const RegisterForm = () => {
 					id: data.user.id,
 					username: formData.username,
 					email: formData.email,
-					updated_at: new Date()
+					updated_at: new Date().toISOString()
 				}
 				const { error: errorProfile } = await supabase.from("profiles").upsert(updates)
 				if (errorProfile) throw errorProfile

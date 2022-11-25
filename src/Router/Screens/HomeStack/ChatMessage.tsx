@@ -42,7 +42,6 @@ const ChatMessage = ({ item }: Props) => {
 
 	useEffect(() => {
 		if (item.images?.length > 0) {
-			console.log("yes images")
 			getImageSource(item.images[0].url)
 		}
 	}, [item.images])

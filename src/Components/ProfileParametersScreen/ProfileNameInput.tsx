@@ -32,6 +32,7 @@ const ProfileNameInput = () => {
 	const toast = useToast()
 
 	useEffect(() => {
+		console.log(isOpen, "isOpen")
 		if (isOpen && usernameRef.current !== null) {
 			usernameRef.current.focus()
 		}
@@ -83,14 +84,16 @@ const ProfileNameInput = () => {
 				</VStack>
 			</Pressable>
 
-			<ActionSheetInput
-				isOpen={isOpen}
-				onClose={onClose}
-				onOpen={onOpen}
-				defaultValue={profile?.username}
-				onChangeText={updateUsername}
-				saveInformation={changeUsername}
-			/>
+			{isOpen && (
+				<ActionSheetInput
+					isOpen={isOpen}
+					onClose={onClose}
+					onOpen={onOpen}
+					defaultValue={profile?.username}
+					onChangeText={updateUsername}
+					saveInformation={changeUsername}
+				/>
+			)}
 		</>
 	)
 }
