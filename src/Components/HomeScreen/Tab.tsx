@@ -23,14 +23,15 @@ const Tab = ({ index, title, key, setIndex, activeIndex }: Props) => {
 			if (room.messages.length === 0) {
 				return false
 			}
-			const isOtherUserMessage = !!room.messages.find((message) => {
-				if (message.user !== session?.user.id) return message.view === false
-			})
-			if (isOtherUserMessage) {
-				return true
-			}
-			return false
+			const isOtherUserMessage = !!room.messages.find((dateMessage) =>
+				dateMessage.messages.find((message) => {
+					if (message.user !== session?.user.id) return message.view === false
+				})
+			)
+
+			return isOtherUserMessage
 		})
+
 		return roomsNotViewed.length
 	}
 

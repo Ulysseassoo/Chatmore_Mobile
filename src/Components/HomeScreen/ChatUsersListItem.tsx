@@ -19,7 +19,7 @@ const ChatUsersListItem = ({ item }: Props) => {
 	const user = item.users[0]
 	const navigation = useNavigation()
 	const session = useAuthStore((state) => state.session)
-	const actualMessage = useMemo(() => item.messages[0], [item.messages])
+	const actualMessage = useMemo(() => item.messages[0].messages[0], [item.messages])
 	const isUserBlocked = useIsUserBlocked(item.room)
 
 	const dimensions = Dimensions.get("screen")
@@ -33,9 +33,13 @@ const ChatUsersListItem = ({ item }: Props) => {
 	const isFromConnectedUser = actualMessage.user === session?.user.id
 
 	const getNotViewedMessages = (user_id: string | undefined) => {
-		const count = item.messages.filter((message) => {
-			if (message.user !== user_id) return message.view === false
-		})
+		const count = item.messages
+			.map((dateMessage) =>
+				dateMessage.messages.filter((message) => {
+					if (message.user !== user_id) return message.view === false
+				})
+			)
+			.filter((mess) => mess.length > 0)
 		return count.length
 	}
 

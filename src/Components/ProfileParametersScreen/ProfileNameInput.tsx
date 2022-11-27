@@ -32,7 +32,7 @@ const ProfileNameInput = () => {
 	const toast = useToast()
 
 	useEffect(() => {
-		console.log(isOpen, "isOpen")
+		// Error on Iphone input already focused.
 		if (isOpen && usernameRef.current !== null) {
 			usernameRef.current.focus()
 		}

@@ -1,7 +1,7 @@
 import { Actionsheet, Box, Center, Flex, HStack, Icon, Image as ImageComponent, Pressable, Text, useDisclose, useToast } from "native-base"
 import React, { useEffect, useMemo } from "react"
 import { deleteImageById, deleteMessageById } from "../../../Api/API"
-import { Message, Image } from "../../../Interface/Types"
+import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
 import { darktheme } from "../../../Theme/globalTheme"
 import { MaterialIcons } from "@expo/vector-icons"
@@ -9,9 +9,7 @@ import { supabase } from "../../../Supabase/supabaseClient"
 import useRoomStore from "../../../Store/roomStore"
 
 interface Props {
-	item: Message & {
-		images: Image[]
-	}
+	item: Message
 }
 
 export const dateFormatted = (created_at: string) => {
@@ -41,7 +39,7 @@ const ChatMessage = ({ item }: Props) => {
 	const toast = useToast()
 
 	useEffect(() => {
-		if (item.images?.length > 0) {
+		if (item.images !== undefined && item.images?.length > 0) {
 			getImageSource(item.images[0].url)
 		}
 	}, [item.images])

@@ -4,6 +4,7 @@ import { Box, Center, FlatList, Flex, Pressable, Text, useToast, View } from "na
 import React, { useEffect, useMemo } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { deleteUserBlock, updateRoomMessages, UserHasBlockedDelete } from "../../../Api/API"
+import ChatDate from "../../../Components/HomeScreen/ChatDate"
 import useIsUserBlocked from "../../../Hooks/useIsUserBlocked"
 import { Message } from "../../../Interface/Types"
 import useAuthStore from "../../../Store/authStore"
@@ -62,20 +63,25 @@ const ChatConversationScreen = () => {
 	}
 
 	const getNotViewedMessages = () => {
-		const count = actualRoom.messages
-			.filter((message) => {
-				if (message.user !== session?.user.id) return message.view === false
-			})
-			.map((message) => {
-				let newMessage = { ...message }
-				// @ts-ignore
-				if (newMessage.images) {
-					// @ts-ignore
-					delete newMessage.images
-				}
-				return newMessage
-			})
-		return count
+		let messagesFormatted: Message[] = []
+		actualRoom.messages
+			.map((dateMessage) =>
+				dateMessage.messages.filter((message) => {
+					if (message.user !== session?.user.id) return message.view === false
+				})
+			)
+			.filter((mess) => mess.length > 0)
+			.map((mapArray) =>
+				mapArray.map((message) => {
+					let newMessage = { ...message }
+					if (newMessage.images) {
+						delete newMessage.images
+					}
+					messagesFormatted.push(newMessage)
+				})
+			)
+
+		return messagesFormatted
 	}
 
 	const setViewedMessage = () => {
@@ -126,11 +132,21 @@ const ChatConversationScreen = () => {
 				<FlatList
 					contentContainerStyle={{
 						display: "flex"
-						// flexDirection: "column-reverse"
-						// alignItems: "baseline"
 					}}
 					inverted
-					renderItem={({ item }) => <ChatMessage item={item} />}
+					renderItem={({ item }) => (
+						<Box my="1">
+							<ChatDate date={item.date} />
+							<FlatList
+								contentContainerStyle={{
+									display: "flex"
+								}}
+								inverted
+								renderItem={({ item }) => <ChatMessage item={item} />}
+								data={item.messages}
+							/>
+						</Box>
+					)}
 					data={actualRoom?.messages}
 				/>
 				{isUserBlocked.hasConnectedUserBlockedRoom && (

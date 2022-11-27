@@ -87,8 +87,6 @@ const ChatConversationBottom = () => {
 			user: session?.user.id
 		}
 
-		console.log(fileExt)
-
 		try {
 			if (fileExt !== ("png" && "jpeg")) throw Error("You need to upload a correct image(PNG, JPEG)!")
 			let { error: uploadError, data: imageData } = await supabase.storage.from("users-images").upload(filePath, decode(file.base64!), {

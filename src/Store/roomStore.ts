@@ -8,7 +8,7 @@ import useAuthStore from "./authStore";
 export interface RoomState {
 	room: number
 	users: Profile[]
-	messages: Message[]
+	messages: DateMessages[]
 	index?: number
     blockedUsers: UserHasBlockedRoom[]
 }
@@ -16,6 +16,21 @@ export interface RoomState {
 type State =  {
 	rooms: RoomState[],
 	isLoading: boolean
+}
+
+interface  RoomsState {
+	rooms: RoomState[]
+}
+
+interface  RoomInnerJoinData {
+	room: number
+	user: Profile
+}
+
+export interface DateMessages {
+	id: number
+	date: string
+	messages: Message[]
 }
 
 type Actions = {
@@ -34,13 +49,21 @@ const initialState: State = {
 	isLoading: true
 }
 
-interface  RoomsState {
-	rooms: RoomState[]
+const getDatesFromMessages = (messages: Message[]) => {
+    const dates = messages.map((room: Message) => new Date(room.created_at).toDateString())
+    return [... new Set(dates)]
 }
 
-interface  RoomInnerJoinData {
-	room: number
-	user: Profile
+const formatMessagesByDates = (messages: Message[]) => {
+    const dates = getDatesFromMessages(messages)
+    let dateMessages: DateMessages[] = []
+    dates.forEach((date, index) => {
+        const messagesWithDates = messages.filter((message) => new Date(message.created_at).toDateString() === date)
+        if (date) {
+            dateMessages = [...dateMessages, { id: index, date: date, messages: messagesWithDates }]
+        }
+    })
+    return dateMessages
 }
 
 const getUserChatRooms = async (user: User) => {
@@ -65,7 +88,8 @@ const getUserChatRooms = async (user: User) => {
             roomNew.room = room.room
             if (room.user.id !== user.id) roomNew.users.push(room.user)
         })
-        roomNew.messages = roomMessages.reverse()
+
+        roomNew.messages = formatMessagesByDates(roomMessages.reverse())
         roomNew.blockedUsers = roomBlockUsers
         newRooms.rooms.push(roomNew)
     }
@@ -92,7 +116,19 @@ const useRoomStore = create(
         if(message !== undefined) {
             const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
             if(roomIndex !== -1) {
-                state.rooms[roomIndex].messages = [message,...state.rooms[roomIndex].messages]
+                const dateIndex = state.rooms[roomIndex].messages.findIndex((dateMessage) => new Date(message.created_at).toDateString() === dateMessage.date)
+                // Date Index -1
+                if(dateIndex === -1) {
+                    const dateMessage : DateMessages = {
+                        id: state.rooms[roomIndex].messages.length,
+                        date: new Date(message.created_at).toDateString(),
+                        messages: [message]
+                    }
+                    state.rooms[roomIndex].messages = [dateMessage, ...state.rooms[roomIndex].messages]
+                }
+                else {
+                    state.rooms[roomIndex].messages[dateIndex].messages = [message,...state.rooms[roomIndex].messages[dateIndex].messages]
+                }
             }
         }
     }),
@@ -100,7 +136,8 @@ const useRoomStore = create(
         if(message !== undefined) {
             const roomIndex = state.rooms.findIndex((room) => room.room === message.room)
             if(roomIndex !== -1) {
-                state.rooms[roomIndex].messages = state.rooms[roomIndex].messages.filter((mess) => mess.id !== message.id)
+                const dateIndex = state.rooms[roomIndex].messages.findIndex((dateMessage) => new Date(message.created_at).toDateString() === dateMessage.date)
+                state.rooms[roomIndex].messages[dateIndex].messages  = state.rooms[roomIndex].messages[dateIndex].messages.filter((mess) => mess.id !== message.id)
             }
         }
     }),
@@ -109,8 +146,18 @@ const useRoomStore = create(
                 const roomIndex = state.rooms.findIndex((room) => room.room === messages[0].room)
                 if(roomIndex !== -1) {
                     const room = {...state.rooms[roomIndex]}
-                    const updatedMessages = room.messages.map((oldMessage) => messages.find((newMessage) => newMessage.id === oldMessage.id) || oldMessage)
-                    state.rooms[roomIndex].messages = updatedMessages
+                    for (let index = 0; index < messages.length; index++) {
+                        const message = messages[index];
+                        const dateIndex = room.messages.findIndex((dateMessage) => new Date(message.created_at).toDateString() === dateMessage.date)
+                        
+                        room.messages[dateIndex].messages = room.messages[dateIndex].messages.map((mess) => {
+                            if(mess.id === message.id) {
+                                return {...mess, ...message}
+                            }
+                            return mess
+                        })
+                    }
+                    state.rooms[roomIndex].messages = room.messages
                 }
             })
     },
