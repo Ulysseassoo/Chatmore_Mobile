@@ -15,7 +15,7 @@ const FloaterIcon = () => {
 			size="sm"
 			bg={darktheme.accentColor}
 			icon={<Icon color="white" as={MaterialIcons} name="add-box" size="xl" />}
-			bottom="20"
+			bottom="16"
 			right="4"
 		/>
 	)

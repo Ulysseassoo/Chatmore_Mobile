@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/core"
 import ProfileParametersScreen from "../Screens/HomeStack/ProfileParametersScreen"
 import ProfileUserScreen from "../Screens/HomeStack/ProfileUserScreen"
 import { Profile } from "../../Interface/Types"
+import HomeHeader from "../../Components/HomeScreen/HomeHeader"
 
 type HomeStackParamList = {
 	Home: undefined
@@ -85,27 +86,7 @@ const HomeStackScreens = () => {
 					headerStyle: {
 						backgroundColor: darktheme.headerMenuColor
 					},
-					// headerBackground: () => <Box bg={darktheme.headerMenuColor} borderBottomColor={"none"} p="0" m="0" />,
-					headerTintColor: darktheme.textColor,
-					headerRight: () => (
-						<HStack space="4" alignItems="center">
-							<Menu
-								bg={darktheme.headerMenuColor}
-								w="190"
-								color="white"
-								trigger={(triggerProps) => {
-									return (
-										<Pressable accessibilityLabel="More options menu" {...triggerProps}>
-											<Icon as={SimpleLineIcons} name="options-vertical" color={darktheme.textColor} />
-										</Pressable>
-									)
-								}}>
-								<Menu.Item color="white" onPress={() => navigation.navigate("Parameters")}>
-									<Text color="white">Parameters</Text>
-								</Menu.Item>
-							</Menu>
-						</HStack>
-					)
+					header: (props) => <HomeHeader {...props} />
 				}}
 			/>
 
