@@ -57,7 +57,7 @@ const ContactScreen = () => {
 
 		channelHome.subscribe(async (status) => {
 			if (status === "SUBSCRIBED") {
-				console.log(status, "to", channelHome.topic)
+				// console.log(status, "to", channelHome.topic)
 				channelHome.send({
 					type: "broadcast",
 

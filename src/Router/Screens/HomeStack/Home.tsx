@@ -65,7 +65,7 @@ const Home = () => {
 						.on("broadcast", { event: "readMessages" }, (payload) => updateViewRoomMessages(payload.payload.messages, session?.user.id))
 						.subscribe(async (status) => {
 							if (status === "SUBSCRIBED") {
-								console.log(status, "to room", room.room)
+								// console.log(status, "to room", room.room)
 							}
 						})
 				}

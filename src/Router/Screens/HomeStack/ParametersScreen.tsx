@@ -30,7 +30,7 @@ const ParametersScreen = () => {
 	const logoutUser = async () => {
 		try {
 			const { error } = await supabase.auth.signOut()
-			console.log("signedOut")
+			// console.log("signedOut")
 			if (error) throw error
 			emptyRooms()
 			setLoggedOut()
